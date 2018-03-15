@@ -1,0 +1,16 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>netcoreapp2.0</TargetFramework>
+    <StartupObject>PoolOverSocks5.Program</StartupObject>
+    <AssemblyName>APR-Router</AssemblyName>
+    <RootNamespace>Router</RootNamespace>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Newtonsoft.Json" Version="11.0.1" />
+    <PackageReference Include="starksoft.aspen" Version="1.1.3" />
+  </ItemGroup>
+
+</Project>

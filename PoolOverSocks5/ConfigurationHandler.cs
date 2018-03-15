@@ -13,7 +13,10 @@ namespace PoolOverSocks5
     {
         public JObject loadedConfiguration;
 
-        private readonly string[] REQUIRED_KEYS = { "Relay Address", "Proxy Address", "Pool Address", "Relay Port", "Proxy Port", "Pool Port", "Relay Concurrent Connections" };
+        private readonly string[] REQUIRED_KEYS = {
+            "MySQL Hostname", "MySQL Port", "MySQL Database", "MySQL Username", "MySQL Password",
+            "Proxy Address", "Proxy Port"
+        };
 
         public ConfigurationHandler()
         {
@@ -104,13 +107,15 @@ namespace PoolOverSocks5
             JObject newConfiguration = new JObject
             {
                 // Pool Information
-                { "Relay Address", "127.0.0.1" },
+                { "MySQL Hostname", "127.0.0.1" },
+                { "MySQL Port", 3306 },
+                { "MySQL Database ", "AnonymousPoolRouting" },
+                { "MySQL Username", "router" },
+                { "MySQL Password ", "" },
+                { "Relay Address", "0.0.0.0" },
                 { "Relay Port", 3333 },
-                { "Relay Concurrent Connections", 16 },
-                { "Proxy Address", "127.0.0.1" },
-                { "Proxy Port", 9050 },
-                { "Pool Address", "pool.supportxmr.com" },
-                { "Pool Port", 3333 },
+                { "Tor Address", "0.0.0.0" },
+                { "Tor Port", 3333 },
             };
 
             loadedConfiguration = newConfiguration;
@@ -118,17 +123,11 @@ namespace PoolOverSocks5
 
         public string GetRelayAddress() => loadedConfiguration.GetValue("Relay Address").ToString();
 
-        public string GetProxyAddress() => loadedConfiguration.GetValue("Proxy Address").ToString();
-
-        public string GetPoolAddress() => loadedConfiguration.GetValue("Pool Address").ToString();
-
-        public Int16 GetRelayConcurrentConnections() => Int16.Parse(loadedConfiguration.GetValue("Relay Concurrent Connections").ToString());
-
         public int GetRelayPort() => int.Parse(loadedConfiguration.GetValue("Relay Port").ToString());
 
-        public int GetProxyPort() => int.Parse(loadedConfiguration.GetValue("Proxy Port").ToString());
+        public string GetProxyAddress() => loadedConfiguration.GetValue("Proxy Address").ToString();
 
-        public int GetPoolPort() => int.Parse(loadedConfiguration.GetValue("Pool Port").ToString());
+        public int GetProxyPort() => int.Parse(loadedConfiguration.GetValue("Proxy Port").ToString());
 
         public string GetConfigurationVersion() => typeof(RuntimeEnvironment).GetTypeInfo().Assembly.GetCustomAttribute<AssemblyFileVersionAttribute>().Version;
 
