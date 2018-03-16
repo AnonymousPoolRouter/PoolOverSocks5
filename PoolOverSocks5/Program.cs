@@ -56,7 +56,7 @@ namespace Router
         {
             // Write
             ConsoleWriteLineWithColor(ConsoleColor.Yellow, string.Format("{0} Response:", responder));
-            ConsoleWriteLineWithColor(ConsoleColor.White, data);
+            Console.WriteLine(data);
         }
 
         public static void ConsoleWriteLineWithColor(ConsoleColor color, string message)
