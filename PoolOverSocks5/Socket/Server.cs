@@ -82,7 +82,7 @@ namespace Router
             }
 
             // Notify the console
-            string pendingData = string.Format("Please connect your miners to {0}:{1} to get started.\n", configuration.GetRelayAddress(), configuration.GetRelayPort());
+            string pendingData = string.Format("Router started successfully: {0}:{1}\n", configuration.GetRelayAddress(), configuration.GetRelayPort());
             Program.ConsoleWriteLineWithColor(ConsoleColor.Green, pendingData);
 
             // Start listening for new clients and repeat.

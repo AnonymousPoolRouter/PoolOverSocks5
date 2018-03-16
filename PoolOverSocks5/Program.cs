@@ -7,19 +7,6 @@ namespace Router
     class Program
     {
         /*
-         * Message of the day
-         * Just some simple text to display information about the project.
-         */
-        private static string[] motd = new string[] {
-            "", //newline for spacing
-            "PoolOverSocks5",
-            "Project by Elycin <Ely Haughie>",
-            "Source Code: https://github.com/elycin/pooloversocks5",
-            "BTC: 1MwzVSXVfm1Gfvtc2n3vqam8434cGA5GgT",
-            "" //newline for spacing
-        };
-
-        /*
          * Configuration Handler
          * Placeholder variable to hold the configuration handling class
          * The class will handle all passed command line arguments.
@@ -44,9 +31,6 @@ namespace Router
          */
         static void Main(string[] args)
         {
-            // Print out the MOTD.
-            foreach (string line in motd) Console.WriteLine(line);
-
             // Initialize a new ConfugrationHandler into the placeholder variable.
             configurationHandler = new ConfigurationHandler();
 
