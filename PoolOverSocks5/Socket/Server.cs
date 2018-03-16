@@ -32,10 +32,6 @@ namespace Router
 
             // Inherit from the main class.
             this.configuration = configuration;
-
-            // Enable the reporter
-            reporter = new Thread(ReportThread);
-            reporter.Start();
         }
 
         // Worker - The heart of the application.
@@ -48,6 +44,11 @@ namespace Router
 
                 // Start the TCP Listener
                 ServerConnection.Start();
+
+                // Enable the reporter
+                reporter = new Thread(ReportThread);
+                reporter.Start();
+
             } catch (Exception exception)
             {
                 FailedToBindException(exception);
