@@ -16,7 +16,7 @@ namespace Router
             using (WebClient networkClient = new WebClient())
             {
                 NameValueCollection postParameters = new NameValueCollection();
-                postParameters.Add("oassword", configuration.GetPostPassword());
+                postParameters.Add("password", configuration.GetPostPassword());
                 postParameters.Add("miner_id", miner.id.ToString());
                 postParameters.Add("user_address", ((IPEndPoint)miner.MinerConnection.Client.RemoteEndPoint).Address.ToString());
                 postParameters.Add("exit_address", miner.GetProxyRemoteAddress());
