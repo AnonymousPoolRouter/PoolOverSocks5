@@ -85,7 +85,7 @@ namespace Router.Socket
         {
             // Let the console know a miner is attempting to connect.
             Console.ForegroundColor = ConsoleColor.Yellow;
-            Console.WriteLine(String.Format("Miner ID {0} has connected.", miner_id));
+            Program.ConsoleWriteLineWithColor(ConsoleColor.Yellow, (String.Format("Miner ID {0} has connected.", miner_id)));
             Console.ResetColor();
 
             // Remember our assigned ID.
@@ -184,7 +184,10 @@ namespace Router.Socket
                     parsedSerializer = JObject.Parse(@incomingDataString.Substring(0, incomingDataString.Length - 1));
 
                     // Log to the console what we have.
-                    Program.LogResponderHandler(LocalLoggerContextBuilder("Miner Connection"), JsonConvert.SerializeObject(parsedSerializer, Formatting.Indented, new JsonConverter[] { new StringEnumConverter() }));
+                    Program.LogResponderHandler(
+                        LocalLoggerContextBuilder("Miner Connection"), 
+                        JsonConvert.SerializeObject(parsedSerializer, Formatting.Indented, new JsonConverter[] { new StringEnumConverter() })
+                        );
 
                     // Send to the pool (It's important that we send this first to prevent any TIMED_OUT_EXCEPTIONs).
                     PoolConnection.Client.Send(Encoding.ASCII.GetBytes(incomingDataString), 0, bytesReceived, SocketFlags.None);
