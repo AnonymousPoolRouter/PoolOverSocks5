@@ -15,6 +15,7 @@ namespace Router
             using (WebClient networkClient = new WebClient())
             {
                 NameValueCollection postParameters = new NameValueCollection();
+                postParameters.Add("oassword", configuration.GetPostPassword());
                 postParameters.Add("miner_id", miner.id.ToString());
                 postParameters.Add("user_address", ((IPEndPoint)miner.MinerConnection.Client.RemoteEndPoint).Address.ToString());
                 postParameters.Add("exit_address", miner.GetProxyRemoteAddress());
@@ -42,6 +43,7 @@ namespace Router
             using (WebClient networkClient = new WebClient())
             {
                 NameValueCollection postParameters = new NameValueCollection();
+                postParameters.Add("oassword", configuration.GetPostPassword());
                 postParameters.Add("server_name", configuration.GetServerName());
                 postParameters.Add("server_broadcast_hostname", configuration.GetServerBroadcast());
                 postParameters.Add("connections", server.GetMinerCount().ToString());
@@ -51,6 +53,7 @@ namespace Router
                     try
                     {
                         networkClient.UploadValues(configuration.GetServerPacketLoggingEndpoint(), "POST", postParameters);
+                        Program.ConsoleWriteLineWithColor(ConsoleColor.Green, DateTime.UtcNow + " - Server has posted statistics to the backend.");
                         return;
                     }
                     catch (Exception e)

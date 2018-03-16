@@ -137,6 +137,8 @@ namespace Router
 
         public string GetServerName() => loadedConfiguration.GetValue("Server Name").ToString();
 
+        public string GetPostPassword() => loadedConfiguration["Endpoint"]["Password"].ToString();
+
         public string GetConfigurationVersion() => typeof(RuntimeEnvironment).GetTypeInfo().Assembly.GetCustomAttribute<AssemblyFileVersionAttribute>().Version;
 
         private bool DoesConfigurationExist() => File.Exists(GetConfigurationAbsolutePath());
