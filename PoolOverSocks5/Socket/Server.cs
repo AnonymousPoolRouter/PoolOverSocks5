@@ -1,4 +1,5 @@
-﻿using Router;
+﻿using Newtonsoft.Json.Linq;
+using Router;
 using Router.Socket;
 using Starksoft.Aspen.Proxy;
 using System;
@@ -14,28 +15,50 @@ namespace Router
 {
     class Server
     {
-        // Class Inheritance
+        /*
+         * Inherited Variables
+         * 
+         * configuration - the configurationc lass from the main program.
+         */
         private ConfigurationHandler configuration;
 
-        // Miner Connections
-        private List<Miner> ConnectedMiners;
+        /*
+         * Miner Variables
+         * 
+         * ConnectedMiners - The list that holds all the class threads of the mienrs
+         */
+        private List<Miner> ConnectedMiners = new List<Miner>();
 
-        // TCP Socket for the whole class
+        /*
+         * TCP Server
+         * 
+         * ServerConnection - the socket of the server
+         */
         public TcpListener ServerConnection;
 
+        /*
+         * Reporter Thread
+         * 
+         * report - the variable that holds the thread.
+         */
         private Thread reporter;
 
-        // Class constructor
+        /// <summary>
+        /// Class Constructor
+        /// 
+        /// Inherts the configuration 
+        /// </summary>
+        /// <param name="configuration"></param>
         public Server(ConfigurationHandler configuration)
         {
-            // Initialize the placeholder variables;
-            ConnectedMiners = new List<Miner>();
-
-            // Inherit from the main class.
             this.configuration = configuration;
         }
 
-        // Worker - The heart of the application.
+        /// <summary>
+        /// Internal Worker
+        /// 
+        /// Starts listening and the reporter thread.
+        /// </summary>
         public void Work()
         {
             try
@@ -46,8 +69,11 @@ namespace Router
                 // Start the TCP Listener
                 ServerConnection.Start();
 
-                // Enable the reporter
-                reporter = new Thread(ReportThread);
+                // Enable the reporter as a background thread.
+                reporter = new Thread(ReportThread)
+                {
+                    IsBackground = true
+                };
                 reporter.Start();
 
             } catch (Exception exception)
@@ -76,14 +102,25 @@ namespace Router
             }
         }
 
+        /// <summary>
+        /// Get Miner Count
+        /// 
+        /// returns the number of miners currently not disposed.
+        /// </summary>
+        /// <returns></returns>
         public Int32 GetMinerCount() => ConnectedMiners.Count;
 
+        /// <summary>
+        /// Report Thread Void
+        /// 
+        /// The void that 
+        /// </summary>
         public void ReportThread()
         {
             while (true)
             {
                 // Cleanup old miners
-                ConnectedMiners = ConnectedMiners.Where(miner => !miner.wantsToBeDisposed).ToList();
+                ConnectedMiners = ConnectedMiners.Where(miner => !miner.CanBeDisposed()).ToList();
 
                 // Log to backend
                 LogConnectionCount();
@@ -114,7 +151,7 @@ namespace Router
             Program.ConsoleWriteLineWithColor(ConsoleColor.Red, (new String('=', Console.BufferWidth - 1)));
             Program.ConsoleWriteLineWithColor(ConsoleColor.Red, string.Format("Failed to bind relay to {0}:{1}.\n", configuration.GetRelayAddress(), configuration.GetRelayPort()));
             Console.WriteLine(exception.ToString());
-            Console.WriteLine("\nPress any key to exit.");
+            Console.WriteLine("\nPress enter key to exit.");
             Program.ConsoleWriteLineWithColor(ConsoleColor.Red, (new String('=', Console.BufferWidth - 1)));
             Console.ReadLine();
             Environment.Exit(1);

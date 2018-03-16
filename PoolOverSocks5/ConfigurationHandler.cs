@@ -59,7 +59,7 @@ namespace Router
                 Program.ConsoleWriteLineWithColor(ConsoleColor.Yellow, "The configuration can be found at");
                 Program.ConsoleWriteLineWithColor(ConsoleColor.Green, GetConfigurationAbsolutePath());
 
-                Program.ConsoleWriteLineWithColor(ConsoleColor.Yellow, "\nPress any key to exit.");
+                Program.ConsoleWriteLineWithColor(ConsoleColor.Yellow, "\nPress enter key to exit.");
                 Program.ConsoleWriteLineWithColor(ConsoleColor.Yellow, (new String('=', Console.BufferWidth - 1)));
                 Console.ReadLine();
                 Environment.Exit(0);

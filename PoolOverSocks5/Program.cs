@@ -38,12 +38,6 @@ namespace Router
          */
         private static string lastResponder;
 
-       public struct PoolConnectionInformation
-        {
-            public string hostname;
-            public int port;
-        }
-
         /*
          * Main Method
          * The main function of where the appllication enters
@@ -62,12 +56,12 @@ namespace Router
         }
 
         /*
-         * Press Any Key To Exit function
+         * Press enter key to exit function
          * Just a simple static function that can be called anywhere to signal that there was an error.
          */
         public static void PressAnyKeyToExit()
         {
-            Console.WriteLine("Press any key to exit.");
+            Console.WriteLine("Press enter key to exit.");
             Console.ReadLine();
             Environment.Exit(1);
         }
