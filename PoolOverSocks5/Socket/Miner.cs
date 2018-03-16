@@ -83,14 +83,8 @@ namespace Router.Socket
         /// <param name="client"></param>
         public Miner(ConfigurationHandler configuration, Int32 miner_id, TcpClient client)
         {
-            // Let the console know a miner is attempting to connect.
-            Console.ForegroundColor = ConsoleColor.Yellow;
-            Program.ConsoleWriteLineWithColor(ConsoleColor.Yellow, (String.Format("Miner {0} has connected from {1}.", miner_id, GetMinerConnectionAddress())));
-            Program.ConsoleWriteLineWithColor(ConsoleColor.Yellow, (String.Format("Miner {0}'s traffic will appear from {1}.", miner_id, GetProxyRemoteAddress())));
-            Console.ResetColor();
-
             // Remember our assigned ID.
-            this.id = miner_id;
+
 
             /*
              * Inherit Varaibles.
@@ -98,8 +92,13 @@ namespace Router.Socket
              * configuration - The configuration class inherited from the server.
              * MinerSocket - The connection to the mining software from the server.
              */
+            this.id = miner_id;
             this.configuration = configuration;
             this.MinerConnection = client;
+
+            // Log that we have connected.
+            Program.ConsoleWriteLineWithColor(ConsoleColor.Yellow, (String.Format("Miner {0} has connected from {1}.", miner_id, GetMinerConnectionAddress())));
+            Program.ConsoleWriteLineWithColor(ConsoleColor.Yellow, (String.Format("Miner {0}'s traffic will appear from {1}.", miner_id, GetProxyRemoteAddress())));
 
             /*
              * Worker Thread
@@ -107,7 +106,7 @@ namespace Router.Socket
              * 1. Create a thread to use the "run" void
              * 2. Daemonize it - make it close on exit
              * 3. Start it
-             */ 
+             */
             MinerThread = new Thread(Run)
             {
                 IsBackground = true
