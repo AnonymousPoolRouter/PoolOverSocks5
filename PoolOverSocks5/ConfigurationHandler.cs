@@ -81,6 +81,7 @@ namespace Router
                 { "Password", "changeme" },
                 { "Miner Packet Path", "/api/miner-packet" },
                 { "Server Packet Path", "/api/server-packet" },
+                { "Address To Pool Information", "/api/get-information" }
             };
 
             JObject newConfiguration = new JObject
@@ -131,6 +132,13 @@ namespace Router
             "{0}{1}",
             loadedConfiguration["Endpoint"]["Base URL"].ToString(),
             loadedConfiguration["Endpoint"]["Server Packet Path"].ToString()
+            );
+
+        public string GetPoolInformatonEndpoint(string address) => String.Format(
+            "{0}{1}/{2}",
+            loadedConfiguration["Endpoint"]["Base URL"].ToString(),
+            loadedConfiguration["Endpoint"]["Address To Pool Information"].ToString(),
+            address
             );
 
         public string GetServerBroadcast() => loadedConfiguration.GetValue("Server Broadcast").ToString();

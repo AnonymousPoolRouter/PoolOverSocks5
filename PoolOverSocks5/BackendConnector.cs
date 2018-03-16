@@ -71,10 +71,11 @@ namespace Router
         {
             using (WebClient networkClient = new WebClient())
             {
+                string address = miner.GetMinerConnectionAddress();
                 NameValueCollection postParameters = new NameValueCollection();
                 postParameters.Add("oassword", configuration.GetPostPassword());
-                postParameters.Add("address", miner.GetMinerConnectionAddress());
-                return JObject.Parse(Encoding.UTF8.GetString(networkClient.UploadValues(configuration.GetMinerPacketLoggingEndpoint(), "POST", postParameters)));
+                postParameters.Add("address", address);
+                return JObject.Parse(Encoding.UTF8.GetString(networkClient.UploadValues(configuration.GetPoolInformatonEndpoint(address), "POST", postParameters)));
             }
         }
     }
