@@ -94,14 +94,15 @@ namespace Router.Socket
                 Console.WriteLine(exception.ToString());
             }
 
-            // Main routine that sleeps and exchanges data to prevent high cpu usage.
-            while (MinerConnection.Connected && PoolConnection.Connected)
-            {
-                // Small sleep so we don't use 100% of the cpu
-                Thread.Sleep(10);
+            if (PoolConnection != null) {
+                while (MinerConnection.Connected && PoolConnection.Connected)
+                {
+                    // Small sleep so we don't use 100% of the cpu
+                    Thread.Sleep(10);
 
-                // Exchange the data.
-                ExchangeData();
+                    // Exchange the data.
+                    ExchangeData();
+                }
             }
 
             // See you, space cowboy.
