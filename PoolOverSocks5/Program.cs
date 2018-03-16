@@ -50,11 +50,8 @@ namespace Router
             // Initialize a new ConfugrationHandler into the placeholder variable.
             configurationHandler = new ConfigurationHandler();
 
-            // Create a new database connecction
-            Database database = new Database(configurationHandler);
-
             // Start the relay.
-            server = new Server(configurationHandler, database);
+            server = new Server(configurationHandler);
             server.Work();
         }
 

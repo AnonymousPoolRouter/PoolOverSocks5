@@ -15,7 +15,6 @@ namespace Router
     {
         // Class Inheritance
         private ConfigurationHandler configuration;
-        private Database database;
 
         // Miner Connections
         private List<Miner> ConnectedMiners;
@@ -26,14 +25,13 @@ namespace Router
         private Thread reporter;
 
         // Class constructor
-        public Server(ConfigurationHandler configuration, Database database)
+        public Server(ConfigurationHandler configuration)
         {
             // Initialize the placeholder variables;
             ConnectedMiners = new List<Miner>();
 
             // Inherit from the main class.
             this.configuration = configuration;
-            this.database = database;
 
             // Enable the reporter
             reporter = new Thread(ReportThread);
@@ -65,11 +63,8 @@ namespace Router
                 // Wait for client connection
                 TcpClient newClient = ServerConnection.AcceptTcpClient();
 
-                // Cleanup old miners
-                ConnectedMiners = ConnectedMiners.Where(miner => !miner.wantsToBeDisposed).ToList();
-
                 // Create a new miner
-                Miner newMiner = new Miner(configuration, database, ConnectedMiners.Count + 1, newClient);
+                Miner newMiner = new Miner(configuration, ConnectedMiners.Count + 1, newClient);
 
                 // Keep track of it
                 ConnectedMiners.Add(newMiner);
@@ -85,7 +80,13 @@ namespace Router
         {
             while (true)
             {
-                BackendLogger.LogConnectionCount(configuration, this);
+                // Cleanup old miners
+                ConnectedMiners = ConnectedMiners.Where(miner => !miner.wantsToBeDisposed).ToList();
+
+                // Log to backend
+                BackendConnector.LogConnectionCount(configuration, this);
+
+                // Repeat a minute later
                 Thread.Sleep(60 * 1000);
             }
         }

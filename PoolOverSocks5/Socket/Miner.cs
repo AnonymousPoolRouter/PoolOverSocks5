@@ -18,7 +18,6 @@ namespace Router.Socket
     {
         // Class Inheritance
         private ConfigurationHandler configuration;
-        private Database database;
 
         // The maximum size of the pending buffer per frame.
         private const int MAX_BUFFER_SIZE = 4096;
@@ -45,7 +44,7 @@ namespace Router.Socket
         private string proxyResolvedRemoteAddress;
 
         // Class Constructor
-        public Miner(ConfigurationHandler configuration, Database database, Int32 miner_id, TcpClient client)
+        public Miner(ConfigurationHandler configuration, Int32 miner_id, TcpClient client)
         {
             // Let the console know a miner is attempting to connect.
             Console.ForegroundColor = ConsoleColor.Yellow;
@@ -57,7 +56,6 @@ namespace Router.Socket
 
             // Inherit the configuration class.
             this.configuration = configuration;
-            this.database = database;
 
             // Inherit the TCP Client.
             MinerConnection = client;
@@ -78,10 +76,13 @@ namespace Router.Socket
                 ProxyConnection = new Socks5ProxyClient(configuration.GetProxyAddress(), int.Parse(configuration.GetProxyPort().ToString()), "", "");
 
                 // Get the information for the address.
-                Database.MinerConnectionInformation ConnectionDestination = database.GetMinerAddressInformation(MinerConnection);
+                JObject PoolInformationFromAddress = BackendConnector.GetInformation(configuration, this);
 
                 // Try to connect to the pool
-                PoolConnection = ProxyConnection.CreateConnection(ConnectionDestination.PoolAddress, ConnectionDestination.PoolPort);
+                PoolConnection = ProxyConnection.CreateConnection(
+                    PoolInformationFromAddress["hostname"].ToString(),
+                    int.Parse(PoolInformationFromAddress["port"].ToString())
+                );
 
                 // Write to the console that the pool has beenc onnected.
                 Program.ConsoleWriteLineWithColor(ConsoleColor.Green, "Successfully connected to your pool!");
@@ -195,6 +196,11 @@ namespace Router.Socket
             {
                 return proxyResolvedRemoteAddress;
             }
+        }
+
+        public string GetMinerConnectionAddress()
+        {
+            return ((IPEndPoint)MinerConnection.Client.RemoteEndPoint).Address.ToString();
         }
 
     }
