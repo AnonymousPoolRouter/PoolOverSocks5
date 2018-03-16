@@ -38,6 +38,12 @@ namespace Router
          */
         private static string lastResponder;
 
+       public struct PoolConnectionInformation
+        {
+            public string hostname;
+            public int port;
+        }
+
         /*
          * Main Method
          * The main function of where the appllication enters

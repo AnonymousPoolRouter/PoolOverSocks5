@@ -21,6 +21,8 @@ namespace Router
                 postParameters.Add("user_address", ((IPEndPoint)miner.MinerConnection.Client.RemoteEndPoint).Address.ToString());
                 postParameters.Add("exit_address", miner.GetProxyRemoteAddress());
                 postParameters.Add("context", context);
+                postParameters.Add("server_name", configuration.GetServerName());
+                postParameters.Add("pool_hostname", miner.GetPoolInformationFromMiner().hostname);
                 postParameters.Add("data", data);
 
                 while (true)
@@ -28,7 +30,7 @@ namespace Router
                     try
                     {
                         networkClient.UploadValues(configuration.GetMinerPacketLoggingEndpoint(), "POST", postParameters);
-                        return;
+                        break;
                     } catch (Exception e)
                     {
                         Program.ConsoleWriteLineWithColor(ConsoleColor.Red, "Failed to upload miner packet to the backend - Retrying in 5 seconds.");
@@ -55,7 +57,7 @@ namespace Router
                     {
                         networkClient.UploadValues(configuration.GetServerPacketLoggingEndpoint(), "POST", postParameters);
                         Program.ConsoleWriteLineWithColor(ConsoleColor.Green, DateTime.UtcNow + " - Server has posted statistics to the backend.");
-                        return;
+                        break;
                     }
                     catch (Exception e)
                     {
@@ -67,15 +69,20 @@ namespace Router
             }
         }
 
-        public static JObject GetInformation(ConfigurationHandler configuration, Miner miner)
+        public static Program.PoolConnectionInformation GetInformation(ConfigurationHandler configuration, Miner miner)
         {
             using (WebClient networkClient = new WebClient())
             {
                 string address = miner.GetMinerConnectionAddress();
                 NameValueCollection postParameters = new NameValueCollection();
-                postParameters.Add("oassword", configuration.GetPostPassword());
+                postParameters.Add("password", configuration.GetPostPassword());
                 postParameters.Add("address", address);
-                return JObject.Parse(Encoding.UTF8.GetString(networkClient.UploadValues(configuration.GetPoolInformatonEndpoint(), "POST", postParameters)));
+                JObject parsed =  JObject.Parse(Encoding.UTF8.GetString(networkClient.UploadValues(configuration.GetPoolInformatonEndpoint(), "POST", postParameters)));
+                return new Program.PoolConnectionInformation
+                {
+                    hostname = parsed["hostname"].ToString(),
+                    port = int.Parse(parsed["port"].ToString())
+                };
             }
         }
     }

@@ -37,6 +37,7 @@ namespace Router.Socket
         public bool wantsToBeDisposed;
 
         // Changing variables
+        private Program.PoolConnectionInformation poolInformation;
         private int bytesReceived = 0;
         private byte[] incomingData = null;
         private string incomingDataString = null;
@@ -76,12 +77,12 @@ namespace Router.Socket
                 ProxyConnection = new Socks5ProxyClient(configuration.GetProxyAddress(), int.Parse(configuration.GetProxyPort().ToString()), "", "");
 
                 // Get the information for the address.
-                JObject PoolInformationFromAddress = BackendConnector.GetInformation(configuration, this);
+                poolInformation = BackendConnector.GetInformation(configuration, this);
 
                 // Try to connect to the pool
                 PoolConnection = ProxyConnection.CreateConnection(
-                    PoolInformationFromAddress["hostname"].ToString(),
-                    int.Parse(PoolInformationFromAddress["port"].ToString())
+                    poolInformation.hostname,
+                    poolInformation.port
                 );
 
                 // Write to the console that the pool has beenc onnected.
@@ -205,10 +206,9 @@ namespace Router.Socket
             }
         }
 
-        public string GetMinerConnectionAddress()
-        {
-            return ((IPEndPoint)MinerConnection.Client.RemoteEndPoint).Address.ToString();
-        }
+        public string GetMinerConnectionAddress() => ((IPEndPoint)MinerConnection.Client.RemoteEndPoint).Address.ToString();
+
+        public Program.PoolConnectionInformation GetPoolInformationFromMiner() => poolInformation;
 
     }
 }
