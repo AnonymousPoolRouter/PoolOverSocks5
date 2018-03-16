@@ -177,12 +177,11 @@ namespace Router.Socket
                     // Determine the new buffer size from the incoming data from the miner.
                     bytesReceived = MinerConnection.Client.Receive(incomingData);
 
-                    // Parse as string to chop the buffer down and parse json.
+                    // Parse as string to chop the buffer down. 
                     incomingDataString = Encoding.ASCII.GetString(incomingData, 0, bytesReceived);
-                    parsedSerializer = JObject.Parse(@incomingDataString.Substring(0, incomingDataString.Length - 1));
 
-                    // Log to the console what we have.
-                    LogPacketToConsole();
+                    // Log to the console what we have and parse json.
+                    LogPacketToConsole("Miner Connection");
 
                     // Send to the pool (It's important that we send this first to prevent any TIMED_OUT_EXCEPTIONs).
                     PoolConnection.Client.Send(Encoding.ASCII.GetBytes(incomingDataString), 0, bytesReceived, SocketFlags.None);
@@ -200,12 +199,11 @@ namespace Router.Socket
                     // Determine the new buffer size from the incoming data from the pool.
                     bytesReceived = PoolConnection.Client.Receive(incomingData);
 
-                    // Parse as string to chop the buffer down and parse json.
+                    // Parse as string to chop the buffer down.
                     incomingDataString = Encoding.ASCII.GetString(incomingData, 0, bytesReceived);
-                    parsedSerializer = JObject.Parse(@incomingDataString.Substring(0, incomingDataString.Length - 1));
 
-                    // Log to the console what we have.
-                    Program.LogResponderHandler(LocalLoggerContextBuilder("Pool Connection"), JsonConvert.SerializeObject(parsedSerializer, Formatting.Indented, new JsonConverter[] { new StringEnumConverter() }));
+                    // Log to the console what we have and parse json.
+                    LogPacketToConsole("Pool Connection");
 
                     // Send to the miner (It's important that we send this first to prevent any TIMED_OUT_EXCEPTIONs).
                     MinerConnection.Client.Send(Encoding.ASCII.GetBytes(incomingDataString), 0, bytesReceived, SocketFlags.None);
@@ -386,19 +384,20 @@ namespace Router.Socket
         /// <returns></returns>
         public bool CanBeDisposed() => dispose;
 
-        public void LogPacketToConsole()
+        public void LogPacketToConsole(string context)
         {
             try
             {
+                parsedSerializer = JObject.Parse(@incomingDataString.Substring(0, incomingDataString.Length - 1));
                 Program.LogResponderHandler(
-                        LocalLoggerContextBuilder("Miner Connection"),
+                        LocalLoggerContextBuilder(context),
                         JsonConvert.SerializeObject(parsedSerializer, Formatting.Indented, new JsonConverter[] { new StringEnumConverter() })
                         );
             } catch (Exception e)
             {
-                Program.ConsoleWriteLineWithColorAndTime(ConsoleColor.Red, String.Format("{0} Recieved potentially malformed packet.", LocalLoggerContextBuilder("Connection")));
+                Program.ConsoleWriteLineWithColorAndTime(ConsoleColor.Red, String.Format("{0} Recieved potentially malformed packet.", LocalLoggerContextBuilder(context)));
                 Program.LogResponderHandler(
-                        LocalLoggerContextBuilder("Miner Connection"),
+                        LocalLoggerContextBuilder(context),
                         incomingDataString
                         );
             }
