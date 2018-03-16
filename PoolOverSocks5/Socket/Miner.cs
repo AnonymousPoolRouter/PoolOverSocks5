@@ -28,7 +28,7 @@ namespace Router.Socket
          * 
          * MAX_BUFFER_SIZE = The default buffer size of the incoming packet, more room to receive bigger requests.
          */
-        private const int MAX_BUFFER_SIZE = 4096;        
+        private const int MAX_BUFFER_SIZE = 64 * 1024;        
 
         /*
          * Socket Variables
@@ -86,6 +86,7 @@ namespace Router.Socket
             /*
              * Inherit Varaibles.
              * 
+             * id - the indentity of the miner
              * configuration - The configuration class inherited from the server.
              * MinerSocket - The connection to the mining software from the server.
              */
@@ -181,10 +182,7 @@ namespace Router.Socket
                     parsedSerializer = JObject.Parse(@incomingDataString.Substring(0, incomingDataString.Length - 1));
 
                     // Log to the console what we have.
-                    Program.LogResponderHandler(
-                        LocalLoggerContextBuilder("Miner Connection"), 
-                        JsonConvert.SerializeObject(parsedSerializer, Formatting.Indented, new JsonConverter[] { new StringEnumConverter() })
-                        );
+                    LogPacketToConsole();
 
                     // Send to the pool (It's important that we send this first to prevent any TIMED_OUT_EXCEPTIONs).
                     PoolConnection.Client.Send(Encoding.ASCII.GetBytes(incomingDataString), 0, bytesReceived, SocketFlags.None);
@@ -387,5 +385,22 @@ namespace Router.Socket
         /// </summary>
         /// <returns></returns>
         public bool CanBeDisposed() => dispose;
+
+        public void LogPacketToConsole()
+        {
+            try
+            {
+                Program.LogResponderHandler(
+                        LocalLoggerContextBuilder("Miner Connection"),
+                        JsonConvert.SerializeObject(parsedSerializer, Formatting.Indented, new JsonConverter[] { new StringEnumConverter() })
+                        );
+            } catch (Exception e)
+            {
+                Program.LogResponderHandler(
+                        LocalLoggerContextBuilder("Miner Connection"),
+                        incomingDataString
+                        );
+            }
+        }
     }
 }

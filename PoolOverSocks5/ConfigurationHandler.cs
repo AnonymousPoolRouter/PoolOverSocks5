@@ -53,14 +53,14 @@ namespace Router
                 File.WriteAllText(GetConfigurationAbsolutePath(), JsonConvert.SerializeObject(loadedConfiguration, Formatting.Indented));
 
                 // Let the user know.
-                Program.ConsoleWriteLineWithColor(ConsoleColor.Yellow, (new String('=', Console.BufferWidth - 1)));
-                Program.ConsoleWriteLineWithColor(ConsoleColor.Yellow, "A previous configuration has not been found, as a result a new one has been written for you.");
-                Program.ConsoleWriteLineWithColor(ConsoleColor.Yellow, "Please change the settings and run 'dotnet run' again to start the relay.\n");
-                Program.ConsoleWriteLineWithColor(ConsoleColor.Yellow, "The configuration can be found at");
-                Program.ConsoleWriteLineWithColor(ConsoleColor.Green, GetConfigurationAbsolutePath());
+                Program.ConsoleWriteLineWithColorAndTime(ConsoleColor.Yellow, (new String('=', Console.BufferWidth - 1)));
+                Program.ConsoleWriteLineWithColorAndTime(ConsoleColor.Yellow, "A previous configuration has not been found, as a result a new one has been written for you.");
+                Program.ConsoleWriteLineWithColorAndTime(ConsoleColor.Yellow, "Please change the settings and run 'dotnet run' again to start the relay.\n");
+                Program.ConsoleWriteLineWithColorAndTime(ConsoleColor.Yellow, "The configuration can be found at");
+                Program.ConsoleWriteLineWithColorAndTime(ConsoleColor.Green, GetConfigurationAbsolutePath());
 
-                Program.ConsoleWriteLineWithColor(ConsoleColor.Yellow, "\nPress enter key to exit.");
-                Program.ConsoleWriteLineWithColor(ConsoleColor.Yellow, (new String('=', Console.BufferWidth - 1)));
+                Program.ConsoleWriteLineWithColorAndTime(ConsoleColor.Yellow, "\nPress enter key to exit.");
+                Program.ConsoleWriteLineWithColorAndTime(ConsoleColor.Yellow, (new String('=', Console.BufferWidth - 1)));
                 Console.ReadLine();
                 Environment.Exit(0);
             }
