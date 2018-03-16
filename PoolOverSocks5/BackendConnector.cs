@@ -75,7 +75,7 @@ namespace Router
                 NameValueCollection postParameters = new NameValueCollection();
                 postParameters.Add("oassword", configuration.GetPostPassword());
                 postParameters.Add("address", address);
-                return JObject.Parse(Encoding.UTF8.GetString(networkClient.UploadValues(configuration.GetPoolInformatonEndpoint(address), "POST", postParameters)));
+                return JObject.Parse(Encoding.UTF8.GetString(networkClient.UploadValues(configuration.GetPoolInformatonEndpoint(), "POST", postParameters)));
             }
         }
     }
