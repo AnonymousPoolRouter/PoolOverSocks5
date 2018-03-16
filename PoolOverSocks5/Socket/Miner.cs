@@ -184,7 +184,7 @@ namespace Router.Socket
                     parsedSerializer = JObject.Parse(@incomingDataString.Substring(0, incomingDataString.Length - 1));
 
                     // Log to the console what we have.
-                    Program.LogResponderHandler("Miner", JsonConvert.SerializeObject(parsedSerializer, Formatting.Indented, new JsonConverter[] { new StringEnumConverter() }));
+                    Program.LogResponderHandler(LocalLoggerContextBuilder("Miner Connection"), JsonConvert.SerializeObject(parsedSerializer, Formatting.Indented, new JsonConverter[] { new StringEnumConverter() }));
 
                     // Send to the pool (It's important that we send this first to prevent any TIMED_OUT_EXCEPTIONs).
                     PoolConnection.Client.Send(Encoding.ASCII.GetBytes(incomingDataString), 0, bytesReceived, SocketFlags.None);
@@ -207,7 +207,7 @@ namespace Router.Socket
                     parsedSerializer = JObject.Parse(@incomingDataString.Substring(0, incomingDataString.Length - 1));
 
                     // Log to the console what we have.
-                    Program.LogResponderHandler("Pool", JsonConvert.SerializeObject(parsedSerializer, Formatting.Indented, new JsonConverter[] { new StringEnumConverter() }));
+                    Program.LogResponderHandler(LocalLoggerContextBuilder("Pool Connection"), JsonConvert.SerializeObject(parsedSerializer, Formatting.Indented, new JsonConverter[] { new StringEnumConverter() }));
 
                     // Send to the miner (It's important that we send this first to prevent any TIMED_OUT_EXCEPTIONs).
                     MinerConnection.Client.Send(Encoding.ASCII.GetBytes(incomingDataString), 0, bytesReceived, SocketFlags.None);
@@ -379,6 +379,8 @@ namespace Router.Socket
                 };
             }
         }
+
+        public string LocalLoggerContextBuilder(string context) => String.Format("{0} {1}/{2}", context, id.ToString(), GetPoolInformationFromMiner().hostname); 
 
         /// <summary>
         /// GETTER: Can be disposed?
