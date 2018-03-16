@@ -20,12 +20,6 @@ namespace Router
         private static Server server;
 
         /*
-         * Last Responder for Logger
-         * This is to keep track of the last thing to print to the console
-         */
-        private static string lastResponder;
-
-        /*
          * Main Method
          * The main function of where the appllication enters
          */
