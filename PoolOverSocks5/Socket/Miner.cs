@@ -83,9 +83,6 @@ namespace Router.Socket
         /// <param name="client"></param>
         public Miner(ConfigurationHandler configuration, Int32 miner_id, TcpClient client)
         {
-            // Remember our assigned ID.
-
-
             /*
              * Inherit Varaibles.
              * 
@@ -98,7 +95,7 @@ namespace Router.Socket
 
             // Log that we have connected.
             Program.ConsoleWriteLineWithColor(ConsoleColor.Yellow, (String.Format("Miner {0} has connected from {1}.", miner_id, GetMinerConnectionAddress())));
-            Program.ConsoleWriteLineWithColor(ConsoleColor.Yellow, (String.Format("Miner {0}'s traffic will appear from {1}.", miner_id, GetProxyRemoteAddress())));
+            Program.ConsoleWriteLineWithColor(ConsoleColor.Yellow, (String.Format("Network traffic from Miner {0} will appear from {1}.", miner_id, GetProxyRemoteAddress())));
 
             /*
              * Worker Thread
