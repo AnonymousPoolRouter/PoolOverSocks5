@@ -136,8 +136,7 @@ namespace Router.Socket
                 );
 
                 // Write to the console that the pool has beenc onnected.
-                Program.ConsoleWriteLineWithColor(ConsoleColor.Green, "Successfully connected to your pool!");
-                Program.ConsoleWriteLineWithColor(ConsoleColor.Green, "The new miner is ready to mine!");
+                Program.ConsoleWriteLineWithColor(ConsoleColor.Green, "Miner has successfully connected to their desired pool: " + GetPoolInformationFromMiner().hostname);
 
                 // Configure Timeouts
                 SetTimeouts();
