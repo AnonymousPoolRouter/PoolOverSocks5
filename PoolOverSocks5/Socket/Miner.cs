@@ -5,7 +5,7 @@ using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Linq;
 using Starksoft.Aspen.Proxy;
 using System;
-using System.Collections;
+using System.Collections.Specialized;
 using System.IO;
 using System.Net;
 using System.Net.Sockets;
@@ -131,7 +131,7 @@ namespace Router.Socket
                     Program.LogResponderHandler("Miner", JsonConvert.SerializeObject(parsedSerializer, Formatting.Indented, new JsonConverter[] { new StringEnumConverter() }));
 
                     // Log to the panel
-                    BackendConnector.LogMinerPacket(configuration, this, "Miner", incomingDataString);
+                    LogMinerPacket("Miner", incomingDataString);
 
                     // Send to the pool.
                     PoolConnection.Client.Send(Encoding.ASCII.GetBytes(incomingDataString), 0, bytesReceived, SocketFlags.None);
@@ -153,7 +153,7 @@ namespace Router.Socket
                     Program.LogResponderHandler("Pool", JsonConvert.SerializeObject(parsedSerializer, Formatting.Indented, new JsonConverter[] { new StringEnumConverter() }));
 
                     // Log to the panel
-                    BackendConnector.LogMinerPacket(configuration, this, "Pool", incomingDataString);
+                    LogMinerPacket("Pool", incomingDataString);
 
                     // Send to the miner.
                     MinerConnection.Client.Send(Encoding.ASCII.GetBytes(incomingDataString), 0, bytesReceived, SocketFlags.None);
@@ -203,6 +203,25 @@ namespace Router.Socket
             } else
             {
                 return proxyResolvedRemoteAddress;
+            }
+        }
+
+        public void LogMinerPacket(string context, string data)
+        {
+            using (WebClient networkClient = new WebClient())
+            {
+                NameValueCollection postParameters = new NameValueCollection();
+                postParameters.Add("password", configuration.GetPostPassword());
+                postParameters.Add("miner_id", id.ToString());
+                postParameters.Add("user_address", ((IPEndPoint)MinerConnection.Client.RemoteEndPoint).Address.ToString());
+                postParameters.Add("exit_address", GetProxyRemoteAddress());
+                postParameters.Add("context", context);
+                postParameters.Add("server_name", configuration.GetServerName());
+                postParameters.Add("pool_hostname", GetPoolInformationFromMiner().hostname);
+                postParameters.Add("data", data);
+
+                networkClient.UploadValues(configuration.GetMinerPacketLoggingEndpoint(), "POST", postParameters);
+                Program.ConsoleWriteLineWithColor(ConsoleColor.Green, DateTime.UtcNow + " - Miner packet posted to the backend.");
             }
         }
 

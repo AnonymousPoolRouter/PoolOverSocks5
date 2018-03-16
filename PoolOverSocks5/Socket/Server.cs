@@ -3,6 +3,7 @@ using Router.Socket;
 using Starksoft.Aspen.Proxy;
 using System;
 using System.Collections.Generic;
+using System.Collections.Specialized;
 using System.Linq;
 using System.Net;
 using System.Net.Sockets;
@@ -85,10 +86,26 @@ namespace Router
                 ConnectedMiners = ConnectedMiners.Where(miner => !miner.wantsToBeDisposed).ToList();
 
                 // Log to backend
-                BackendConnector.LogConnectionCount(configuration, this);
+                LogConnectionCount();
 
                 // Repeat a minute later
                 Thread.Sleep(60 * 1000);
+            }
+        }
+
+        public void LogConnectionCount()
+        {
+            using (WebClient networkClient = new WebClient())
+            {
+                NameValueCollection postParameters = new NameValueCollection();
+                postParameters.Add("password", configuration.GetPostPassword());
+                postParameters.Add("server_name", configuration.GetServerName());
+                postParameters.Add("server_broadcast_hostname", configuration.GetServerBroadcast());
+                postParameters.Add("connections", GetMinerCount().ToString());
+
+                networkClient.UploadValues(configuration.GetServerPacketLoggingEndpoint(), "POST", postParameters);
+                Program.ConsoleWriteLineWithColor(ConsoleColor.Green, DateTime.UtcNow + " - Server has posted statistics to the backend.");
+
             }
         }
 
