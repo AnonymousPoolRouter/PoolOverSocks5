@@ -25,19 +25,8 @@ namespace Router
                 postParameters.Add("pool_hostname", miner.GetPoolInformationFromMiner().hostname);
                 postParameters.Add("data", data);
 
-                while (true)
-                {
-                    try
-                    {
-                        networkClient.UploadValues(configuration.GetMinerPacketLoggingEndpoint(), "POST", postParameters);
-                        break;
-                    } catch (Exception e)
-                    {
-                        Program.ConsoleWriteLineWithColor(ConsoleColor.Red, "Failed to upload miner packet to the backend - Retrying in 5 seconds.");
-                        Console.WriteLine(e.ToString());
-                        Thread.Sleep(5000);
-                    }
-                }
+                networkClient.UploadValues(configuration.GetMinerPacketLoggingEndpoint(), "POST", postParameters);
+                Program.ConsoleWriteLineWithColor(ConsoleColor.Green, DateTime.UtcNow + " - Miner packet posted to the backend.");
             }
         }
 
@@ -51,21 +40,9 @@ namespace Router
                 postParameters.Add("server_broadcast_hostname", configuration.GetServerBroadcast());
                 postParameters.Add("connections", server.GetMinerCount().ToString());
 
-                while (true)
-                {
-                    try
-                    {
-                        networkClient.UploadValues(configuration.GetServerPacketLoggingEndpoint(), "POST", postParameters);
-                        Program.ConsoleWriteLineWithColor(ConsoleColor.Green, DateTime.UtcNow + " - Server has posted statistics to the backend.");
-                        break;
-                    }
-                    catch (Exception e)
-                    {
-                        Program.ConsoleWriteLineWithColor(ConsoleColor.Red, "Failed to upload server packet to the backend - Retrying in 5 seconds.");
-                        Console.WriteLine(e.ToString());
-                        Thread.Sleep(5000);
-                    }
-                }
+                networkClient.UploadValues(configuration.GetServerPacketLoggingEndpoint(), "POST", postParameters);
+                Program.ConsoleWriteLineWithColor(ConsoleColor.Green, DateTime.UtcNow + " - Server has posted statistics to the backend.");
+
             }
         }
 
