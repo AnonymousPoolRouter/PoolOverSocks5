@@ -96,8 +96,8 @@ namespace Router
                 { "MySQL Password ", "" },
                 { "Relay Address", "0.0.0.0" },
                 { "Relay Port", 3333 },
-                { "Tor Address", "0.0.0.0" },
-                { "Tor Port", 3333 },
+                { "Proxy Address", "0.0.0.0" },
+                { "Proxy Port", 3333 },
                 { "Endpoint", endpointConfiguration },
             };
 
