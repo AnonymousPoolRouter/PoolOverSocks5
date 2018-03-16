@@ -100,9 +100,6 @@ namespace Router.Socket
             this.configuration = configuration;
             this.MinerConnection = client;
 
-            // Configure Timeouts
-            SetTimeouts();
-
             /*
              * Worker Thread
              * 
@@ -141,6 +138,9 @@ namespace Router.Socket
                 // Write to the console that the pool has beenc onnected.
                 Program.ConsoleWriteLineWithColor(ConsoleColor.Green, "Successfully connected to your pool!");
                 Program.ConsoleWriteLineWithColor(ConsoleColor.Green, "The new miner is ready to mine!");
+
+                // Configure Timeouts
+                SetTimeouts();
             }
             catch (Exception exception)
             {
