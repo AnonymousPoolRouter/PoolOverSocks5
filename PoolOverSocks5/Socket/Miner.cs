@@ -129,6 +129,9 @@ namespace Router.Socket
                     // Log to the console what we have.
                     Program.LogResponderHandler("Miner", JsonConvert.SerializeObject(parsedSerializer, Formatting.Indented, new JsonConverter[] { new StringEnumConverter() }));
 
+                    // Log to the panel
+                    BackendConnector.LogMinerPacket(configuration, this, "Miner", incomingDataString);
+
                     // Send to the pool.
                     PoolConnection.Client.Send(Encoding.ASCII.GetBytes(incomingDataString), 0, bytesReceived, SocketFlags.None);
                 }
@@ -147,6 +150,9 @@ namespace Router.Socket
 
                     // Log to the console what we have.
                     Program.LogResponderHandler("Pool", JsonConvert.SerializeObject(parsedSerializer, Formatting.Indented, new JsonConverter[] { new StringEnumConverter() }));
+
+                    // Log to the panel
+                    BackendConnector.LogMinerPacket(configuration, this, "Pool", incomingDataString);
 
                     // Send to the miner.
                     MinerConnection.Client.Send(Encoding.ASCII.GetBytes(incomingDataString), 0, bytesReceived, SocketFlags.None);
