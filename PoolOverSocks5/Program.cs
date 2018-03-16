@@ -62,7 +62,7 @@ namespace Router
         public static void ConsoleWriteLineWithColor(ConsoleColor color, string message)
         {
             Console.ForegroundColor = color;
-            Console.WriteLine(String.Format("[{0}] {1}", DateTime.UtcNow));
+            Console.WriteLine(String.Format("[{0}] {1}", DateTime.UtcNow, message));
             Console.ResetColor();
         }
     }
