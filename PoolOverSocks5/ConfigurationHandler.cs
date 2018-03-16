@@ -7,16 +7,11 @@ using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Text;
 
-namespace PoolOverSocks5
+namespace Router
 {
     class ConfigurationHandler
     {
         public JObject loadedConfiguration;
-
-        private readonly string[] REQUIRED_KEYS = {
-            "MySQL Hostname", "MySQL Port", "MySQL Database", "MySQL Username", "MySQL Password",
-            "Proxy Address", "Proxy Port"
-        };
 
         public ConfigurationHandler()
         {
@@ -40,9 +35,6 @@ namespace PoolOverSocks5
                 {
                     loadedConfiguration = (JObject)JToken.ReadFrom(reader);
                 }
-
-                ValidateConfiguration();
-               
             }
             catch (Exception ex)
             {
@@ -51,27 +43,6 @@ namespace PoolOverSocks5
                 Console.ReadLine();
                 Environment.Exit(1);
             }
-        }
-
-        private void ValidateConfiguration()
-        {
-            foreach (string key in REQUIRED_KEYS)
-            {
-                try
-                {
-                     string testing = loadedConfiguration.GetValue(key).ToString();
-                } catch (Exception e)
-                {
-                    Program.ConsoleWriteLineWithColor(ConsoleColor.Yellow, (new String('=', Console.BufferWidth - 1)));
-                    Program.ConsoleWriteLineWithColor(ConsoleColor.Yellow, "Your configuration is missing a key value pair.");
-                    Program.ConsoleWriteLineWithColor(ConsoleColor.Yellow, "Please check it and make sure that the key: '" + key + "' is not missing.");
-                    Program.ConsoleWriteLineWithColor(ConsoleColor.Yellow, "\nPress any key to exit.");
-                    Program.ConsoleWriteLineWithColor(ConsoleColor.Yellow, (new String('=', Console.BufferWidth - 1)));
-                    Console.ReadLine();
-                    Environment.Exit(0);
-                }
-            }
-            Program.ConsoleWriteLineWithColor(ConsoleColor.Yellow, "Configuration successfully loaded from disk.\n");
         }
 
         private void WriteConfiguration()
@@ -104,9 +75,19 @@ namespace PoolOverSocks5
 
         private void CreateNewConfiguration()
         {
+            JObject endpointConfiguration = new JObject
+            {
+                { "Base URL", "https://endpoint.com" },
+                { "Password", "changeme" },
+                { "Miner Packet Path", "/api/miner-packet" },
+                { "Server Packet Path", "/api/server-packet" },
+            };
+
             JObject newConfiguration = new JObject
             {
                 // Pool Information
+                { "Server Name", "United States - East Coast" },
+                { "Server Broadcast", "us-east.endpoint.com:3333" },
                 { "MySQL Hostname", "127.0.0.1" },
                 { "MySQL Port", 3306 },
                 { "MySQL Database ", "AnonymousPoolRouting" },
@@ -116,6 +97,7 @@ namespace PoolOverSocks5
                 { "Relay Port", 3333 },
                 { "Tor Address", "0.0.0.0" },
                 { "Tor Port", 3333 },
+                { "Endpoint", endpointConfiguration },
             };
 
             loadedConfiguration = newConfiguration;
@@ -123,11 +105,37 @@ namespace PoolOverSocks5
 
         public string GetRelayAddress() => loadedConfiguration.GetValue("Relay Address").ToString();
 
-        public int GetRelayPort() => int.Parse(loadedConfiguration.GetValue("Relay Port").ToString());
+        public uint GetRelayPort() => uint.Parse(loadedConfiguration.GetValue("Relay Port").ToString());
 
         public string GetProxyAddress() => loadedConfiguration.GetValue("Proxy Address").ToString();
 
-        public int GetProxyPort() => int.Parse(loadedConfiguration.GetValue("Proxy Port").ToString());
+        public uint GetProxyPort() => uint.Parse(loadedConfiguration.GetValue("Proxy Port").ToString());
+
+        public string GetMySQLHostname() => loadedConfiguration.GetValue("MySQL Hostname").ToString();
+
+        public string GetMySQLDatabase() => loadedConfiguration.GetValue("MySQL Database").ToString();
+
+        public string GetMySQLUsername() => loadedConfiguration.GetValue("MySQL Username").ToString();
+
+        public string GetMySQLPassword() => loadedConfiguration.GetValue("MySQL Password").ToString();
+
+        public uint GetMySQLPort() => uint.Parse(loadedConfiguration.GetValue("MySQL Port").ToString());
+
+        public string GetMinerPacketLoggingEndpoint() => String.Format(
+            "{0}{1}", 
+            loadedConfiguration["Endpoint"]["Base URL"].ToString(), 
+            loadedConfiguration["Endpoint"]["Miner Packet Path"].ToString()
+            );
+
+        public string GetServerPacketLoggingEndpoint() => String.Format(
+            "{0}{1}",
+            loadedConfiguration["Endpoint"]["Base URL"].ToString(),
+            loadedConfiguration["Endpoint"]["Server Packet Path"].ToString()
+            );
+
+        public string GetServerBroadcast() => loadedConfiguration.GetValue("Server Broadcast").ToString();
+
+        public string GetServerName() => loadedConfiguration.GetValue("Server Name").ToString();
 
         public string GetConfigurationVersion() => typeof(RuntimeEnvironment).GetTypeInfo().Assembly.GetCustomAttribute<AssemblyFileVersionAttribute>().Version;
 

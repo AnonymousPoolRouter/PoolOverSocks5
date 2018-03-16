@@ -1,19 +1,24 @@
-﻿using Newtonsoft.Json;
+﻿using com.LandonKey.SocksWebProxy;
+using com.LandonKey.SocksWebProxy.Proxy;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Linq;
 using Starksoft.Aspen.Proxy;
 using System;
 using System.Collections;
+using System.IO;
+using System.Net;
 using System.Net.Sockets;
 using System.Text;
 using System.Threading;
 
-namespace PoolOverSocks5.Socket
+namespace Router.Socket
 {
     internal class Miner
     {
-        // Configuration class inheritance variable;
+        // Class Inheritance
         private ConfigurationHandler configuration;
+        private Database database;
 
         // The maximum size of the pending buffer per frame.
         private const int MAX_BUFFER_SIZE = 4096;
@@ -22,7 +27,7 @@ namespace PoolOverSocks5.Socket
         public Int32 id;
 
         // Socket variables
-        private TcpClient MinerConnection;
+        public TcpClient MinerConnection;
         private TcpClient PoolConnection;
         private Socks5ProxyClient ProxyConnection;
 
@@ -37,9 +42,10 @@ namespace PoolOverSocks5.Socket
         private byte[] incomingData = null;
         private string incomingDataString = null;
         private JObject parsedSerializer = new JObject();
+        private string proxyResolvedRemoteAddress;
 
         // Class Constructor
-        public Miner(Int32 miner_id,  ConfigurationHandler configuration, TcpClient client)
+        public Miner(ConfigurationHandler configuration, Database database, Int32 miner_id, TcpClient client)
         {
             // Let the console know a miner is attempting to connect.
             Console.ForegroundColor = ConsoleColor.Yellow;
@@ -51,6 +57,7 @@ namespace PoolOverSocks5.Socket
 
             // Inherit the configuration class.
             this.configuration = configuration;
+            this.database = database;
 
             // Inherit the TCP Client.
             MinerConnection = client;
@@ -68,10 +75,13 @@ namespace PoolOverSocks5.Socket
             try
             {
                 // Try to connect to the proxy.
-                ProxyConnection = new Socks5ProxyClient(configuration.GetProxyAddress(), configuration.GetProxyPort(), "", "");
+                ProxyConnection = new Socks5ProxyClient(configuration.GetProxyAddress(), int.Parse(configuration.GetProxyPort().ToString()), "", "");
+
+                // Get the information for the address.
+                Database.MinerConnectionInformation ConnectionDestination = database.GetMinerAddressInformation(MinerConnection);
 
                 // Try to connect to the pool
-                PoolConnection = ProxyConnection.CreateConnection(configuration.GetPoolAddress(), configuration.GetPoolPort());
+                PoolConnection = ProxyConnection.CreateConnection(ConnectionDestination.PoolAddress, ConnectionDestination.PoolPort);
 
                 // Write to the console that the pool has beenc onnected.
                 Program.ConsoleWriteLineWithColor(ConsoleColor.Green, "Successfully connected to your pool!");
@@ -167,6 +177,25 @@ namespace PoolOverSocks5.Socket
             }
         }
 
-        
+        public string GetProxyRemoteAddress()
+        {
+            if (proxyResolvedRemoteAddress == null)
+            {
+                string proxyAddress = configuration.GetProxyAddress();
+                int proxyPort = int.Parse(configuration.GetProxyPort().ToString());
+
+                HttpWebRequest request = (HttpWebRequest)WebRequest.Create("https://api.ipify.org/");
+                request.Proxy = new SocksWebProxy(new ProxyConfig(IPAddress.Parse(proxyAddress), 12345, IPAddress.Parse(proxyAddress), proxyPort, ProxyConfig.SocksVersion.Five), false);
+                using (HttpWebResponse response = (HttpWebResponse)request.GetResponse())
+                {
+                    proxyResolvedRemoteAddress = new StreamReader(response.GetResponseStream()).ReadToEnd();
+                    return proxyResolvedRemoteAddress;
+                }
+            } else
+            {
+                return proxyResolvedRemoteAddress;
+            }
+        }
+
     }
 }

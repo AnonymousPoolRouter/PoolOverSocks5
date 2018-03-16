@@ -2,7 +2,7 @@
 using System.IO;
 using System.Threading;
 
-namespace PoolOverSocks5
+namespace Router
 {
     class Program
     {
@@ -30,7 +30,7 @@ namespace PoolOverSocks5
          * Relay Handler
          * This is the actual class that will handle the networking magic and relay data along the socks5 proxy.
          */
-        private static Server relayHandler;
+        private static Server server;
 
         /*
          * Last Responder for Logger
@@ -50,9 +50,12 @@ namespace PoolOverSocks5
             // Initialize a new ConfugrationHandler into the placeholder variable.
             configurationHandler = new ConfigurationHandler();
 
+            // Create a new database connecction
+            Database database = new Database(configurationHandler);
+
             // Start the relay.
-            relayHandler = new Server(configurationHandler);
-            relayHandler.Work();
+            server = new Server(configurationHandler, database);
+            server.Work();
         }
 
         /*

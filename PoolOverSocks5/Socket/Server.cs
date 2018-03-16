@@ -1,4 +1,5 @@
-﻿using PoolOverSocks5.Socket;
+﻿using Router;
+using Router.Socket;
 using Starksoft.Aspen.Proxy;
 using System;
 using System.Collections.Generic;
@@ -8,12 +9,13 @@ using System.Net.Sockets;
 using System.Text;
 using System.Threading;
 
-namespace PoolOverSocks5
+namespace Router
 {
     class Server
     {
         // Class Inheritance
         private ConfigurationHandler configuration;
+        private Database database;
 
         // Miner Connections
         private List<Miner> ConnectedMiners;
@@ -21,26 +23,30 @@ namespace PoolOverSocks5
         // TCP Socket for the whole class
         public TcpListener ServerConnection;
 
+        private Thread reporter;
 
         // Class constructor
-        public Server(ConfigurationHandler configuration)
+        public Server(ConfigurationHandler configuration, Database database)
         {
             // Initialize the placeholder variables;
             ConnectedMiners = new List<Miner>();
 
             // Inherit from the main class.
             this.configuration = configuration;
+            this.database = database;
+
+            // Enable the reporter
+            reporter = new Thread(ReportThread);
+            reporter.Start();
         }
 
-        
         // Worker - The heart of the application.
         public void Work()
         {
-            
             try
             {
                 // Create a new listener instance
-                ServerConnection = new TcpListener(IPAddress.Parse(configuration.GetRelayAddress()), configuration.GetRelayPort());
+                ServerConnection = new TcpListener(IPAddress.Parse(configuration.GetRelayAddress()), int.Parse(configuration.GetRelayPort().ToString()));
 
                 // Start the TCP Listener
                 ServerConnection.Start();
@@ -63,13 +69,24 @@ namespace PoolOverSocks5
                 ConnectedMiners = ConnectedMiners.Where(miner => !miner.wantsToBeDisposed).ToList();
 
                 // Create a new miner
-                Miner newMiner = new Miner(ConnectedMiners.Count + 1, configuration, newClient);
+                Miner newMiner = new Miner(configuration, database, ConnectedMiners.Count + 1, newClient);
 
                 // Keep track of it
                 ConnectedMiners.Add(newMiner);
 
                 // Write to the cosnole how many connections we have
-                Program.ConsoleWriteLineWithColor(ConsoleColor.Yellow, String.Format("There are now {0} miner(s) connected.", ConnectedMiners.Count));
+                Program.ConsoleWriteLineWithColor(ConsoleColor.Yellow, String.Format("There are now {0} miner(s) connected.", GetMinerCount()));
+            }
+        }
+
+        public Int32 GetMinerCount() => ConnectedMiners.Count;
+
+        public void ReportThread()
+        {
+            while (true)
+            {
+                BackendLogger.LogConnectionCount(configuration, this);
+                Thread.Sleep(60 * 1000);
             }
         }
 
