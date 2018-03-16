@@ -396,6 +396,7 @@ namespace Router.Socket
                         );
             } catch (Exception e)
             {
+                Program.ConsoleWriteLineWithColorAndTime(ConsoleColor.Red, String.Format("{0} Recieved potentially malformed packet.", LocalLoggerContextBuilder("Connection")));
                 Program.LogResponderHandler(
                         LocalLoggerContextBuilder("Miner Connection"),
                         incomingDataString
