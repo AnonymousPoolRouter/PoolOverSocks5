@@ -94,8 +94,8 @@ namespace Router.Socket
             this.MinerConnection = client;
 
             // Log that we have connected.
-            Program.ConsoleWriteLineWithColor(ConsoleColor.Yellow, (String.Format("Miner {0} has connected from {1}.", miner_id, GetMinerConnectionAddress())));
-            Program.ConsoleWriteLineWithColor(ConsoleColor.Yellow, (String.Format("Network traffic from Miner {0} will appear from {1}.", miner_id, GetProxyRemoteAddress())));
+            Program.ConsoleWriteLineWithColorAndTime(ConsoleColor.Yellow, (String.Format("Miner {0} has connected from {1}.", miner_id, GetMinerConnectionAddress())));
+            Program.ConsoleWriteLineWithColorAndTime(ConsoleColor.Yellow, (String.Format("Network traffic from Miner {0} will appear from {1}.", miner_id, GetProxyRemoteAddress())));
 
             /*
              * Worker Thread
@@ -133,14 +133,14 @@ namespace Router.Socket
                 );
 
                 // Write to the console that the pool has beenc onnected.
-                Program.ConsoleWriteLineWithColor(ConsoleColor.Green, "Miner has successfully connected to their desired pool: " + GetPoolInformationFromMiner().hostname);
+                Program.ConsoleWriteLineWithColorAndTime(ConsoleColor.Green, "Miner has successfully connected to their desired pool: " + GetPoolInformationFromMiner().hostname);
 
                 // Configure Timeouts
                 SetTimeouts();
             }
             catch (Exception exception)
             {
-                Program.ConsoleWriteLineWithColor(ConsoleColor.Red, "Failed to establish a connection to the pool, the miner will be disconnected.");
+                Program.ConsoleWriteLineWithColorAndTime(ConsoleColor.Red, "Failed to establish a connection to the pool, the miner will be disconnected.");
                 Console.WriteLine(exception.ToString());
             }
 
@@ -220,8 +220,8 @@ namespace Router.Socket
             catch (Exception exception)
             {
                 // Write information to the console.
-                Program.ConsoleWriteLineWithColor(ConsoleColor.Red, "There was an exception while attempting to exchange data between the pool and the client.");
-                Program.ConsoleWriteLineWithColor(ConsoleColor.Yellow, "The connection will be dropped.");
+                Program.ConsoleWriteLineWithColorAndTime(ConsoleColor.Red, "There was an exception while attempting to exchange data between the pool and the client.");
+                Program.ConsoleWriteLineWithColorAndTime(ConsoleColor.Yellow, "The connection will be dropped.");
                 Console.WriteLine(exception.ToString());
 
                 // Safely close all the socket connections to free up resources.
@@ -246,7 +246,7 @@ namespace Router.Socket
             }
             catch (Exception e)
             {
-                Program.ConsoleWriteLineWithColor(ConsoleColor.Red, "Failed to close TCP Socket: " + e.ToString());
+                Program.ConsoleWriteLineWithColorAndTime(ConsoleColor.Red, "Failed to close TCP Socket: " + e.ToString());
             }
         }
 
@@ -324,7 +324,7 @@ namespace Router.Socket
                 postParameters.Add("data", data);
                 networkClient.UploadValues(configuration.GetMinerPacketLoggingEndpoint(), "POST", postParameters);
 
-                Program.ConsoleWriteLineWithColor(ConsoleColor.Green, "Miner packet successfully sent to the backend.");
+                Program.ConsoleWriteLineWithColorAndTime(ConsoleColor.Green, "Miner packet successfully sent to the backend.");
             }
         }
 

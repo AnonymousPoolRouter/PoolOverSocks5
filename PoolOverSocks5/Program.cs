@@ -49,14 +49,21 @@ namespace Router
         public static void LogResponderHandler(string responder, string data)
         {
             // Write
-            ConsoleWriteLineWithColor(ConsoleColor.Yellow, string.Format("{0} Response:", responder));
+            ConsoleWriteLineWithColorAndTime(ConsoleColor.Yellow, string.Format("{0} Response:", responder));
             Console.WriteLine(data);
+        }
+
+        public static void ConsoleWriteLineWithColorAndTime(ConsoleColor color, string message)
+        {
+            Console.ForegroundColor = color;
+            Console.WriteLine(String.Format("[{0}] {1}", DateTime.UtcNow, message));
+            Console.ResetColor();
         }
 
         public static void ConsoleWriteLineWithColor(ConsoleColor color, string message)
         {
             Console.ForegroundColor = color;
-            Console.WriteLine(String.Format("[{0}] {1}", DateTime.UtcNow, message));
+            Console.WriteLine(message);
             Console.ResetColor();
         }
     }
