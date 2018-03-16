@@ -82,7 +82,7 @@ namespace Router
             }
 
             // Notify the console
-            string pendingData = string.Format("Router started successfully: {0}:{1}\n", configuration.GetRelayAddress(), configuration.GetRelayPort());
+            string pendingData = string.Format("Router started successfully: {0}:{1}", configuration.GetRelayAddress(), configuration.GetRelayPort());
             Program.ConsoleWriteLineWithColor(ConsoleColor.Green, pendingData);
 
             // Start listening for new clients and repeat.
