@@ -31,6 +31,8 @@ namespace Router
          */
         static void Main(string[] args)
         {
+            Console.WriteLine("Anonymous Pool Routing - Router\n");
+
             // Initialize a new ConfugrationHandler into the placeholder variable.
             configurationHandler = new ConfigurationHandler();
 
