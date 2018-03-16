@@ -55,7 +55,7 @@ namespace Router
         public static void LogResponderHandler(string responder, string data)
         {
             // Write
-            ConsoleWriteLineWithColor(ConsoleColor.Green, string.Format("\n{0} Response:", responder));
+            ConsoleWriteLineWithColor(ConsoleColor.Yellow, string.Format("{0} Response:", responder));
 
             // Print the remaining data
             Console.WriteLine(data);
