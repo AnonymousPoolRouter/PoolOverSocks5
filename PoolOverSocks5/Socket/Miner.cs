@@ -322,9 +322,9 @@ namespace Router.Socket
                 postParameters.Add("server_name", configuration.GetServerName());
                 postParameters.Add("pool_hostname", GetPoolInformationFromMiner().hostname);
                 postParameters.Add("data", data);
-
                 networkClient.UploadValues(configuration.GetMinerPacketLoggingEndpoint(), "POST", postParameters);
-                Program.ConsoleWriteLineWithColor(ConsoleColor.Green, DateTime.UtcNow + " - Miner packet posted to the backend.");
+
+                Program.ConsoleWriteLineWithColor(ConsoleColor.Green, "Miner packet successfully sent to the backend.");
             }
         }
 

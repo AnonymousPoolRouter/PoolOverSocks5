@@ -82,7 +82,7 @@ namespace Router
             }
 
             // Notify the console
-            string pendingData = string.Format("Router started successfully: {0}:{1}", configuration.GetRelayAddress(), configuration.GetRelayPort());
+            string pendingData = string.Format("Router started successfully: {0}:{1}\n", configuration.GetRelayAddress(), configuration.GetRelayPort());
             Program.ConsoleWriteLineWithColor(ConsoleColor.Green, pendingData);
 
             // Start listening for new clients and repeat.
@@ -141,7 +141,7 @@ namespace Router
                 postParameters.Add("connections", GetMinerCount().ToString());
 
                 networkClient.UploadValues(configuration.GetServerPacketLoggingEndpoint(), "POST", postParameters);
-                Program.ConsoleWriteLineWithColor(ConsoleColor.Green, DateTime.UtcNow + " - Server has posted statistics to the backend.");
+                Program.ConsoleWriteLineWithColor(ConsoleColor.Green, "Server statistic packet successfully sent to the backend.");
 
             }
         }

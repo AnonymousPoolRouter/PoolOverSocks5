@@ -56,15 +56,13 @@ namespace Router
         {
             // Write
             ConsoleWriteLineWithColor(ConsoleColor.Yellow, string.Format("{0} Response:", responder));
-
-            // Print the remaining data
-            Console.WriteLine(data);
+            ConsoleWriteLineWithColor(ConsoleColor.White, data);
         }
 
         public static void ConsoleWriteLineWithColor(ConsoleColor color, string message)
         {
             Console.ForegroundColor = color;
-            Console.WriteLine(message);
+            Console.WriteLine(String.Format("[{0}] {1}", DateTime.UtcNow));
             Console.ResetColor();
         }
     }
