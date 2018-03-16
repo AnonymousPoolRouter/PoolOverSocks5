@@ -85,7 +85,8 @@ namespace Router.Socket
         {
             // Let the console know a miner is attempting to connect.
             Console.ForegroundColor = ConsoleColor.Yellow;
-            Program.ConsoleWriteLineWithColor(ConsoleColor.Yellow, (String.Format("Miner ID {0} has connected.", miner_id)));
+            Program.ConsoleWriteLineWithColor(ConsoleColor.Yellow, (String.Format("Miner {0} has connected from {1}.", miner_id, GetMinerConnectionAddress())));
+            Program.ConsoleWriteLineWithColor(ConsoleColor.Yellow, (String.Format("Miner {0}'s traffic will appear from {1}.", miner_id, GetProxyRemoteAddress())));
             Console.ResetColor();
 
             // Remember our assigned ID.
