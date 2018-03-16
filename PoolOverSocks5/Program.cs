@@ -54,14 +54,8 @@ namespace Router
 
         public static void LogResponderHandler(string responder, string data)
         {
-            if (lastResponder != responder)
-            {
-                // Update the last responder
-                lastResponder = responder;
-
-                // Write
-                ConsoleWriteLineWithColor(ConsoleColor.Green, string.Format("\n{0} Response:", responder));
-            }
+            // Write
+            ConsoleWriteLineWithColor(ConsoleColor.Green, string.Format("\n{0} Response:", responder));
 
             // Print the remaining data
             Console.WriteLine(data);
