@@ -44,7 +44,7 @@ namespace Router
                 NameValueCollection postParameters = new NameValueCollection();
                 postParameters.Add("server_name", configuration.GetServerName());
                 postParameters.Add("server_broadcast_hostname", configuration.GetServerBroadcast());
-                postParameters.Add("connection_count", server.GetMinerCount().ToString());
+                postParameters.Add("connections", server.GetMinerCount().ToString());
 
                 while (true)
                 {
