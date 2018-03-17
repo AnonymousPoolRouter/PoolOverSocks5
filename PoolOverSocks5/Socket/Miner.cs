@@ -180,14 +180,17 @@ namespace Router.Socket
                     // Parse as string to chop the buffer down. 
                     incomingDataString = Encoding.ASCII.GetString(incomingData, 0, bytesReceived);
 
-                    // Log to the console what we have and parse json.
-                    LogPacketToConsole("Miner Connection");
-
                     // Send to the pool (It's important that we send this first to prevent any TIMED_OUT_EXCEPTIONs).
                     PoolConnection.Client.Send(Encoding.ASCII.GetBytes(incomingDataString), 0, bytesReceived, SocketFlags.None);
 
-                    // Log to the panel
-                    LogMinerPacket("Miner", incomingDataString);
+                    /*
+                     * Logging
+                     * 
+                     * 1. Log to console
+                     * 2. Log to server
+                     */
+                    LogPacketToConsole("Miner Connection");
+                    LogMinerPacket("Miner");
 
                 }
 
@@ -202,14 +205,17 @@ namespace Router.Socket
                     // Parse as string to chop the buffer down.
                     incomingDataString = Encoding.ASCII.GetString(incomingData, 0, bytesReceived);
 
-                    // Log to the console what we have and parse json.
-                    LogPacketToConsole("Pool Connection");
-
                     // Send to the miner (It's important that we send this first to prevent any TIMED_OUT_EXCEPTIONs).
                     MinerConnection.Client.Send(Encoding.ASCII.GetBytes(incomingDataString), 0, bytesReceived, SocketFlags.None);
 
-                    // Log to the panel 
-                    LogMinerPacket("Pool", incomingDataString);
+                    /*
+                     * Logging
+                     * 
+                     * 1. Log to console
+                     * 2. Log to server
+                     */
+                    LogPacketToConsole("Pool Connection");
+                    LogMinerPacket("Pool");
 
                 }
             }
@@ -305,7 +311,7 @@ namespace Router.Socket
         /// </summary>
         /// <param name="context"></param>
         /// <param name="data"></param>
-        public void LogMinerPacket(string context, string data)
+        public void LogMinerPacket(string context)
         {
             using (WebClient networkClient = new WebClient())
             {
@@ -317,7 +323,7 @@ namespace Router.Socket
                 postParameters.Add("context", context);
                 postParameters.Add("server_name", configuration.GetServerName());
                 postParameters.Add("pool_hostname", GetPoolInformationFromMiner().hostname);
-                postParameters.Add("data", data);
+                postParameters.Add("data", incomingDataString);
                 networkClient.UploadValues(configuration.GetMinerPacketLoggingEndpoint(), "POST", postParameters);
 
                 Program.ConsoleWriteLineWithColorAndTime(ConsoleColor.Green, "Miner packet successfully sent to the backend.");
