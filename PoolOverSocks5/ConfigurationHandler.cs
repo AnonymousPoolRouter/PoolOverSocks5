@@ -94,6 +94,7 @@ namespace Router
                 { "Proxy Address", "127.0.0.1" },
                 { "Proxy Port", 9050 },
                 { "Endpoint", endpointConfiguration },
+                { "Update Frequency", 15 },
             };
 
             loadedConfiguration = newConfiguration;
@@ -106,6 +107,8 @@ namespace Router
         public string GetProxyAddress() => loadedConfiguration.GetValue("Proxy Address").ToString();
 
         public uint GetProxyPort() => uint.Parse(loadedConfiguration.GetValue("Proxy Port").ToString());
+
+        public int GetUpdateFrequency() => int.Parse(loadedConfiguration.GetValue("Update Frequency").ToString());
 
         public string GetMinerPacketLoggingEndpoint() => String.Format(
             "{0}{1}", 

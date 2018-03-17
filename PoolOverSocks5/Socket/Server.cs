@@ -121,7 +121,7 @@ namespace Router
                 LogServerStatistics();
 
                 // Delay between reports.
-                Thread.Sleep(15 * 1000);
+                Thread.Sleep(configuration.GetUpdateFrequency() * 1000);
             }
         }
 
