@@ -123,27 +123,34 @@ namespace Router
                 ConnectedMiners = ConnectedMiners.Where(miner => !miner.CanBeDisposed()).ToList();
 
                 // Log to backend
-                LogConnectionCount();
+                LogServerStatistics();
 
                 // Repeat a minute later
                 Thread.Sleep(60 * 1000);
             }
         }
 
-        public void LogConnectionCount()
+        public void LogServerStatistics()
         {
-            using (WebClient networkClient = new WebClient())
+            try
             {
-                NameValueCollection postParameters = new NameValueCollection();
-                postParameters.Add("password", configuration.GetPostPassword());
-                postParameters.Add("server_name", configuration.GetServerName());
-                postParameters.Add("server_broadcast_hostname", configuration.GetServerBroadcast());
-                postParameters.Add("connections", GetMinerCount().ToString());
+                using (WebClient networkClient = new WebClient())
+                {
+                    NameValueCollection postParameters = new NameValueCollection();
+                    postParameters.Add("password", configuration.GetPostPassword());
+                    postParameters.Add("server_name", configuration.GetServerName());
+                    postParameters.Add("server_broadcast_hostname", configuration.GetServerBroadcast());
+                    postParameters.Add("connections", GetMinerCount().ToString());
 
-                networkClient.UploadValues(configuration.GetServerPacketLoggingEndpoint(), "POST", postParameters);
-                Program.ConsoleWriteLineWithColorAndTime(ConsoleColor.Green, "Server statistic packet successfully sent to the backend.");
+                    networkClient.UploadValues(configuration.GetServerPacketLoggingEndpoint(), "POST", postParameters);
+                    Program.ConsoleWriteLineWithColorAndTime(ConsoleColor.Green, "Server statistic packet successfully sent to the backend.");
 
-            }
+                }
+            } catch (Exception e)
+            {
+                Program.ConsoleWriteLineWithColorAndTime(ConsoleColor.Red, "An exception occured while attempting to update the backend with server statistics.");
+                Console.WriteLine(e.ToString());
+            } 
         }
 
         public void FailedToBindException(Exception exception)
