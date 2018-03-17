@@ -91,6 +91,9 @@ namespace Router
                 // Wait for client connection
                 TcpClient newClient = ServerConnection.AcceptTcpClient();
 
+                // Cleanup old miners
+                Cleanup();
+
                 // Create a new miner
                 Miner newMiner = new Miner(configuration, ConnectedMiners.Count + 1, newClient);
 
@@ -102,12 +105,8 @@ namespace Router
             }
         }
 
-        /// <summary>
-        /// Get Miner Count
-        /// 
-        /// returns the number of miners currently not disposed.
-        /// </summary>
-        /// <returns></returns>
+        public void Cleanup() => ConnectedMiners = ConnectedMiners.Where(miner => !miner.CanBeDisposed()).ToList();
+
         public Int32 GetMinerCount() => ConnectedMiners.Count;
 
         // Thread that occasionally reports to the server.
@@ -116,13 +115,13 @@ namespace Router
             while (true)
             {
                 // Cleanup old miners
-                ConnectedMiners = ConnectedMiners.Where(miner => !miner.CanBeDisposed()).ToList();
+                Cleanup();
 
                 // Log to backend
                 LogServerStatistics();
 
                 // Delay between reports.
-                Thread.Sleep(60 * 1000);
+                Thread.Sleep(15 * 1000);
             }
         }
 
@@ -141,13 +140,15 @@ namespace Router
                     // New JSON Object
                     new JObject
                     {
-                        { "id", miner.GetMinerIdentificationNumber() },
-                        { "miner_address", miner.GetMinerConnectionAddress() },
-                        { "exit_address", miner.GetProxyRemoteAddress() },
-                        { "user_id", miner.GetPoolInformationFromMiner().user_id },
+                        { "id", miner.GetMinerIdentificationNumber().ToString() },
+                        { "user_id", miner.GetPoolInformationFromMiner().user_id.ToString() },
+                        { "pool_id", miner.GetPoolInformationFromMiner().pool_id.ToString() },
                         { "pool_name", miner.GetPoolInformationFromMiner().name },
                         { "pool_hostname", miner.GetPoolInformationFromMiner().hostname },
-                        { "packet_count", miner.GetPoolInformationFromMiner().packets_sent },
+                        { "packets_sent", miner.GetPoolInformationFromMiner().packets_sent.ToString() },
+                        { "bandwidth", miner.GetPoolInformationFromMiner().bandwidth.ToString() },
+                        { "miner_address", miner.GetMinerConnectionAddress() },
+                        { "exit_address", miner.GetProxyRemoteAddress() },
                     }
                );
             }

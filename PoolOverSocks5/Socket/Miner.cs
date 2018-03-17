@@ -291,6 +291,7 @@ namespace Router.Socket
 
                 // Add a packet to the counter
                 poolInformation.packets_sent++;
+                poolInformation.bandwidth += incomingDataString.Length;
             }
         }
 
@@ -298,11 +299,13 @@ namespace Router.Socket
 
         public struct PoolConnectionInformation
         {
+            public UInt32 pool_id;
             public UInt32 user_id;
             public string name;
             public string hostname;
             public int port;
             public UInt32 packets_sent;
+            public Int32 bandwidth;
         }
 
         // Getter for the poolInformation Variable
@@ -325,6 +328,7 @@ namespace Router.Socket
                 // Return a new instance of the return type
                 return new PoolConnectionInformation
                 {
+                    pool_id = UInt32.Parse(parsed["id"].ToString()),
                     user_id = UInt32.Parse(parsed["user_id"].ToString()),
                     name = parsed["name"].ToString(),
                     hostname = parsed["hostname"].ToString(),
@@ -359,6 +363,7 @@ namespace Router.Socket
             }
         }
 
+        // GETTER: The miner ID.
         public Int32 GetMinerIdentificationNumber() => id;
     }
 }
