@@ -89,7 +89,6 @@ namespace Router.Socket
 
             // Log that we have connected.
             Program.ConsoleWriteLineWithColorAndTime(ConsoleColor.Yellow, (String.Format("Miner {0} has connected from {1}.", miner_id, GetMinerConnectionAddress())));
-            Program.ConsoleWriteLineWithColorAndTime(ConsoleColor.Yellow, (String.Format("Network traffic from Miner {0} will appear from {1}.", miner_id, GetProxyRemoteAddress())));
 
             /*
              * Worker Thread
@@ -123,6 +122,7 @@ namespace Router.Socket
                 );
 
                 // Write to the console that the pool has beenc onnected.
+                Program.ConsoleWriteLineWithColorAndTime(ConsoleColor.Yellow, (String.Format("Network traffic from Miner {0} will appear from {1}.", id, GetProxyRemoteAddress())));
                 Program.ConsoleWriteLineWithColorAndTime(ConsoleColor.Green, "Miner has successfully connected to their desired pool: " + GetPoolInformationFromMiner().hostname);
 
                 // Configure Timeouts
@@ -134,7 +134,7 @@ namespace Router.Socket
                 Console.WriteLine(exception.ToString());
             }
 
-            if (PoolConnection != null)
+            if (PoolConnection != null && proxyResolvedRemoteAddress != null)
             {
                 while (MinerConnection.Connected && PoolConnection.Connected)
                 {
