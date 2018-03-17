@@ -53,14 +53,14 @@ namespace Router
                 File.WriteAllText(GetConfigurationAbsolutePath(), JsonConvert.SerializeObject(loadedConfiguration, Formatting.Indented));
 
                 // Let the user know.
-                Program.ConsoleWriteLineWithColorAndTime(ConsoleColor.Yellow, (new String('=', Console.BufferWidth - 1)));
-                Program.ConsoleWriteLineWithColorAndTime(ConsoleColor.Yellow, "A previous configuration has not been found, as a result a new one has been written for you.");
-                Program.ConsoleWriteLineWithColorAndTime(ConsoleColor.Yellow, "Please change the settings and run 'dotnet run' again to start the relay.\n");
-                Program.ConsoleWriteLineWithColorAndTime(ConsoleColor.Yellow, "The configuration can be found at");
-                Program.ConsoleWriteLineWithColorAndTime(ConsoleColor.Green, GetConfigurationAbsolutePath());
+                Program.ConsoleWriteLineWithColor(ConsoleColor.Yellow, (new String('=', Console.BufferWidth - 1)));
+                Program.ConsoleWriteLineWithColor(ConsoleColor.Yellow, "A previous configuration has not been found, as a result a new one has been written for you.");
+                Program.ConsoleWriteLineWithColor(ConsoleColor.Yellow, "Please change the settings and run 'dotnet run' again to start the relay.\n");
+                Program.ConsoleWriteLineWithColor(ConsoleColor.Yellow, "The configuration can be found at");
+                Program.ConsoleWriteLineWithColor(ConsoleColor.Green, GetConfigurationAbsolutePath());
 
-                Program.ConsoleWriteLineWithColorAndTime(ConsoleColor.Yellow, "\nPress enter key to exit.");
-                Program.ConsoleWriteLineWithColorAndTime(ConsoleColor.Yellow, (new String('=', Console.BufferWidth - 1)));
+                Program.ConsoleWriteLineWithColor(ConsoleColor.Yellow, "\nPress enter key to exit.");
+                Program.ConsoleWriteLineWithColor(ConsoleColor.Yellow, (new String('=', Console.BufferWidth - 1)));
                 Console.ReadLine();
                 Environment.Exit(0);
             }
@@ -87,17 +87,12 @@ namespace Router
             JObject newConfiguration = new JObject
             {
                 // Pool Information
-                { "Server Name", "United States - East Coast" },
-                { "Server Broadcast", "us-east.endpoint.com:3333" },
-                { "MySQL Hostname", "127.0.0.1" },
-                { "MySQL Port", 3306 },
-                { "MySQL Database ", "AnonymousPoolRouting" },
-                { "MySQL Username", "router" },
-                { "MySQL Password ", "" },
+                { "Server Name", "Testing Server" },
+                { "Server Broadcast", "localhost:3333" },
                 { "Relay Address", "0.0.0.0" },
                 { "Relay Port", 3333 },
-                { "Proxy Address", "0.0.0.0" },
-                { "Proxy Port", 3333 },
+                { "Proxy Address", "127.0.0.1" },
+                { "Proxy Port", 9050 },
                 { "Endpoint", endpointConfiguration },
             };
 
@@ -111,16 +106,6 @@ namespace Router
         public string GetProxyAddress() => loadedConfiguration.GetValue("Proxy Address").ToString();
 
         public uint GetProxyPort() => uint.Parse(loadedConfiguration.GetValue("Proxy Port").ToString());
-
-        public string GetMySQLHostname() => loadedConfiguration.GetValue("MySQL Hostname").ToString();
-
-        public string GetMySQLDatabase() => loadedConfiguration.GetValue("MySQL Database").ToString();
-
-        public string GetMySQLUsername() => loadedConfiguration.GetValue("MySQL Username").ToString();
-
-        public string GetMySQLPassword() => loadedConfiguration.GetValue("MySQL Password").ToString();
-
-        public uint GetMySQLPort() => uint.Parse(loadedConfiguration.GetValue("MySQL Port").ToString());
 
         public string GetMinerPacketLoggingEndpoint() => String.Format(
             "{0}{1}", 

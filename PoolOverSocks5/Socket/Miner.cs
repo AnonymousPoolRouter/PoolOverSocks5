@@ -18,23 +18,23 @@ namespace Router.Socket
     {
         /*
          * Inheritable Classes
-         * 
+         *
          * These are the classes that should be inherited from the server class.
          */
         private ConfigurationHandler configuration;
 
         /*
          * Constants
-         * 
+         *
          * MAX_BUFFER_SIZE = The default buffer size of the incoming packet, more room to receive bigger requests.
          */
-        private const int MAX_BUFFER_SIZE = 64 * 1024;        
+        private const int MAX_BUFFER_SIZE = 64 * 1024;
 
         /*
          * Socket Variables
-         * 
+         *
          * There sockets control the flow between the miner, proxy and pool.
-         * 
+         *
          * MinerConnection - The Mining Software
          * ProxyConnection - The connection to the socks 5 proxy
          * PoolConnection - The connection to the pool through ProxyConnection
@@ -45,7 +45,7 @@ namespace Router.Socket
 
         /*
          * Thread Varaibles
-         * 
+         *
          * MinerThread - The thread of the working part of this class.
          * wantsToBeDisposed - The signal that tells the server that we should dispose this class.
          */
@@ -54,9 +54,9 @@ namespace Router.Socket
 
         /*
          * Changing Varialbes
-         * 
+         *
          * Variables that bay be dynamically assigned and changed per class instance.
-         * 
+         *
          * id - The identification number of the connection
          * bytesReceived - The number of bytes received by the socket
          * incomingData - The Byte array that will be written to when receiving data from one of the socket variables
@@ -73,19 +73,12 @@ namespace Router.Socket
         private string proxyResolvedRemoteAddress;
         private PoolConnectionInformation poolInformation;
 
-        /// <summary>
-        /// Constructor
-        /// 
-        /// The constructor is the function that gets called when instantiating a new class.
-        /// </summary>
-        /// <param name="configuration"></param>
-        /// <param name="miner_id"></param>
-        /// <param name="client"></param>
+        // Constructor.
         public Miner(ConfigurationHandler configuration, Int32 miner_id, TcpClient client)
         {
             /*
              * Inherit Varaibles.
-             * 
+             *
              * id - the indentity of the miner
              * configuration - The configuration class inherited from the server.
              * MinerSocket - The connection to the mining software from the server.
@@ -100,7 +93,7 @@ namespace Router.Socket
 
             /*
              * Worker Thread
-             * 
+             *
              * 1. Create a thread to use the "run" void
              * 2. Daemonize it - make it close on exit
              * 3. Start it
@@ -112,11 +105,7 @@ namespace Router.Socket
             MinerThread.Start();
         }
 
-        /// <summary>
-        /// Run Void
-        /// 
-        /// The function that handles all the initial working and looping of exchanging data
-        /// </summary>
+        // The running function of each thread.
         private void Run()
         {
             try
@@ -145,7 +134,8 @@ namespace Router.Socket
                 Console.WriteLine(exception.ToString());
             }
 
-            if (PoolConnection != null) {
+            if (PoolConnection != null)
+            {
                 while (MinerConnection.Connected && PoolConnection.Connected)
                 {
                     // Small sleep so we don't use 100% of the cpu
@@ -160,11 +150,7 @@ namespace Router.Socket
             dispose = true;
         }
 
-        /// <summary>
-        /// Exchange Data
-        /// 
-        /// Exchanges data between all the sockets.
-        /// </summary>
+        // Void that exchanges data between the pool, proxy and miner.
         private void ExchangeData()
         {
             try
@@ -177,7 +163,7 @@ namespace Router.Socket
                     // Determine the new buffer size from the incoming data from the miner.
                     bytesReceived = MinerConnection.Client.Receive(incomingData);
 
-                    // Parse as string to chop the buffer down. 
+                    // Parse as string to chop the buffer down.
                     incomingDataString = Encoding.ASCII.GetString(incomingData, 0, bytesReceived);
 
                     // Send to the pool (It's important that we send this first to prevent any TIMED_OUT_EXCEPTIONs).
@@ -185,13 +171,12 @@ namespace Router.Socket
 
                     /*
                      * Logging
-                     * 
+                     *
                      * 1. Log to console
                      * 2. Log to server
                      */
                     LogPacketToConsole("Miner Connection");
                     LogMinerPacket("Miner");
-
                 }
 
                 if (PoolConnection.Available != 0)
@@ -210,13 +195,12 @@ namespace Router.Socket
 
                     /*
                      * Logging
-                     * 
+                     *
                      * 1. Log to console
                      * 2. Log to server
                      */
                     LogPacketToConsole("Pool Connection");
                     LogMinerPacket("Pool");
-
                 }
             }
             catch (Exception exception)
@@ -234,12 +218,7 @@ namespace Router.Socket
             }
         }
 
-        /// <summary>
-        /// Safe Close
-        /// 
-        /// Safely closes a socket.
-        /// </summary>
-        /// <param name="client"></param>
+        // Safely close the passed network socket.
         private void SafeClose(TcpClient client)
         {
             try
@@ -252,37 +231,18 @@ namespace Router.Socket
             }
         }
 
-        /// <summary>
-        /// Set Timeouts
-        /// 
-        /// Sets tiemouts for the sockets.
-        /// </summary>
+        // Set socket timeouts.
         public void SetTimeouts()
         {
             MinerConnection.SendTimeout = Minutes(2);
             PoolConnection.SendTimeout = Minutes(5);
         }
 
-        /// <summary>
-        /// Time Multiplier - Seconds
-        /// </summary>
-        /// <param name="seconds"></param>
-        /// <returns></returns>
+        // Helper functions for time measurement.
         public Int32 Seconds(int seconds) => seconds * 1000;
-
-        /// <summary>
-        /// Time Multiplier - Minutes
-        /// </summary>
-        /// <param name="minutes"></param>
-        /// <returns></returns>
         public Int32 Minutes(int minutes) => minutes * Seconds(60);
 
-        /// <summary>
-        /// Get Proxy Remote Address
-        /// 
-        /// Returns the remote addresss that the pool sees.
-        /// </summary>
-        /// <returns></returns>
+        // Gets the remote address from the exit node.
         public string GetProxyRemoteAddress()
         {
             if (proxyResolvedRemoteAddress == null)
@@ -297,72 +257,61 @@ namespace Router.Socket
                     proxyResolvedRemoteAddress = new StreamReader(response.GetResponseStream()).ReadToEnd();
                     return proxyResolvedRemoteAddress;
                 }
-            } else
+            }
+            else
             {
                 return proxyResolvedRemoteAddress;
             }
         }
 
-        /// <summary>
-        /// Log Miner Packet
-        /// 
-        /// Logs the incoming data to the backend.
-        /// If it throws an exception, it should disconnect the miner.
-        /// </summary>
-        /// <param name="context"></param>
-        /// <param name="data"></param>
+        // Void that logs to the server.
         public void LogMinerPacket(string context)
         {
+            // Disposable Network Client
             using (WebClient networkClient = new WebClient())
             {
-                NameValueCollection postParameters = new NameValueCollection();
-                postParameters.Add("password", configuration.GetPostPassword());
-                postParameters.Add("miner_id", id.ToString());
-                postParameters.Add("user_address", ((IPEndPoint)MinerConnection.Client.RemoteEndPoint).Address.ToString());
-                postParameters.Add("exit_address", GetProxyRemoteAddress());
-                postParameters.Add("context", context);
-                postParameters.Add("server_name", configuration.GetServerName());
-                postParameters.Add("pool_hostname", GetPoolInformationFromMiner().hostname);
-                postParameters.Add("data", incomingDataString);
-                networkClient.UploadValues(configuration.GetMinerPacketLoggingEndpoint(), "POST", postParameters);
+                // POST Parameters
+                NameValueCollection PostParameters = new NameValueCollection();
 
+                // Add Values
+                PostParameters.Add("password", configuration.GetPostPassword());
+                PostParameters.Add("miner_id", id.ToString());
+                PostParameters.Add("user_address", ((IPEndPoint)MinerConnection.Client.RemoteEndPoint).Address.ToString());
+                PostParameters.Add("exit_address", GetProxyRemoteAddress());
+                PostParameters.Add("context", context);
+                PostParameters.Add("server_name", configuration.GetServerName());
+                PostParameters.Add("pool_hostname", GetPoolInformationFromMiner().hostname);
+                PostParameters.Add("data", incomingDataString);
+
+                // Send to server
+                networkClient.UploadValues(configuration.GetMinerPacketLoggingEndpoint(), "POST", PostParameters);
+
+                // Write to cosnole
                 Program.ConsoleWriteLineWithColorAndTime(ConsoleColor.Green, "Miner packet successfully sent to the backend.");
+
+                // Add a packet to the counter
+                poolInformation.packets_sent++;
             }
         }
 
-        /// <summary>
-        /// Getter: Get Miner Connection Address
-        /// 
-        /// Gets the connected address of the miner.
-        /// </summary>
-        /// <returns></returns>
         public string GetMinerConnectionAddress() => ((IPEndPoint)MinerConnection.Client.RemoteEndPoint).Address.ToString();
 
-        /// <summary>
-        /// STRUCT Pool Connection Information
-        /// 
-        /// A template that specifies an easy to use structure of storing poool data.
-        /// </summary>
         public struct PoolConnectionInformation
         {
+            public UInt32 user_id;
+            public string name;
             public string hostname;
             public int port;
+            public UInt32 packets_sent;
         }
 
-        /// <summary>
-        /// GETTER: Gets the poolInformation variable.
-        /// </summary>
-        /// <returns></returns>
+        // Getter for the poolInformation Variable
         public PoolConnectionInformation GetPoolInformationFromMiner() => poolInformation;
 
-        /// <summary>
-        /// Get Pool Information For Address
-        /// 
-        /// Get's the pool data for the required address.
-        /// </summary>
-        /// <returns></returns>
+        // Get Pool Information from Database
         public PoolConnectionInformation GetPoolInformationForAddress()
         {
+            // Create a disposable network client
             using (WebClient networkClient = new WebClient())
             {
                 // Add post parameters
@@ -376,20 +325,20 @@ namespace Router.Socket
                 // Return a new instance of the return type
                 return new PoolConnectionInformation
                 {
+                    user_id = UInt32.Parse(parsed["user_id"].ToString()),
+                    name = parsed["name"].ToString(),
                     hostname = parsed["hostname"].ToString(),
                     port = int.Parse(parsed["port"].ToString())
                 };
             }
         }
 
-        public string LocalLoggerContextBuilder(string context) => String.Format("{0} {1}/{2}", context, id.ToString(), GetPoolInformationFromMiner().hostname); 
+        public string LocalLoggerContextBuilder(string context) => String.Format("{0} {1}/{2}", context, id.ToString(), GetPoolInformationFromMiner().hostname);
 
-        /// <summary>
-        /// GETTER: Can be disposed?
-        /// </summary>
-        /// <returns></returns>
+        // Getter to determine if the class can be disposed of.
         public bool CanBeDisposed() => dispose;
 
+        // Void function that reports to the console.
         public void LogPacketToConsole(string context)
         {
             try
@@ -399,7 +348,8 @@ namespace Router.Socket
                         LocalLoggerContextBuilder(context),
                         JsonConvert.SerializeObject(parsedSerializer, Formatting.Indented, new JsonConverter[] { new StringEnumConverter() })
                         );
-            } catch (Exception e)
+            }
+            catch (Exception e)
             {
                 Program.ConsoleWriteLineWithColorAndTime(ConsoleColor.Red, String.Format("{0} Recieved potentially malformed packet.", LocalLoggerContextBuilder(context)));
                 Program.LogResponderHandler(
@@ -408,5 +358,7 @@ namespace Router.Socket
                         );
             }
         }
+
+        public Int32 GetMinerIdentificationNumber() => id;
     }
 }

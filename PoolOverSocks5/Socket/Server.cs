@@ -110,11 +110,7 @@ namespace Router
         /// <returns></returns>
         public Int32 GetMinerCount() => ConnectedMiners.Count;
 
-        /// <summary>
-        /// Report Thread Void
-        /// 
-        /// The void that 
-        /// </summary>
+        // Thread that occasionally reports to the server.
         public void ReportThread()
         {
             while (true)
@@ -125,34 +121,69 @@ namespace Router
                 // Log to backend
                 LogServerStatistics();
 
-                // Repeat a minute later
+                // Delay between reports.
                 Thread.Sleep(60 * 1000);
             }
         }
 
+        // Compile all miner data
         public void LogServerStatistics()
         {
+            // Placeholder JSON array
+            JArray MinerDataPostArray = new JArray();
+
+            // Iterate through each individual miner
+            foreach (Miner miner in ConnectedMiners)
+            {
+                // Add the nested object to the placeholdder array
+                MinerDataPostArray.Add(
+
+                    // New JSON Object
+                    new JObject
+                    {
+                        { "id", miner.GetMinerIdentificationNumber() },
+                        { "miner_address", miner.GetMinerConnectionAddress() },
+                        { "exit_address", miner.GetProxyRemoteAddress() },
+                        { "user_id", miner.GetPoolInformationFromMiner().user_id },
+                        { "pool_name", miner.GetPoolInformationFromMiner().name },
+                        { "pool_hostname", miner.GetPoolInformationFromMiner().hostname },
+                        { "packet_count", miner.GetPoolInformationFromMiner().packets_sent },
+                    }
+               );
+            }
+
+            // Try to send to server.
             try
             {
-                using (WebClient networkClient = new WebClient())
+                // Disposable Network Client
+                using (WebClient NetworkClient = new WebClient())
                 {
-                    NameValueCollection postParameters = new NameValueCollection();
-                    postParameters.Add("password", configuration.GetPostPassword());
-                    postParameters.Add("server_name", configuration.GetServerName());
-                    postParameters.Add("server_broadcast_hostname", configuration.GetServerBroadcast());
-                    postParameters.Add("connections", GetMinerCount().ToString());
+                    // POST Parameters
+                    NameValueCollection PostParameters = new NameValueCollection();
 
-                    networkClient.UploadValues(configuration.GetServerPacketLoggingEndpoint(), "POST", postParameters);
+                    // Add Values
+                    PostParameters.Add("password", configuration.GetPostPassword());
+                    PostParameters.Add("server_name", configuration.GetServerName());
+                    PostParameters.Add("server_broadcast_hostname", configuration.GetServerBroadcast());
+                    PostParameters.Add("connections", GetMinerCount().ToString());
+                    PostParameters.Add("miner_json", MinerDataPostArray.ToString());
+
+                    // Post to server
+                    NetworkClient.UploadValues(configuration.GetServerPacketLoggingEndpoint(), "POST", PostParameters);
+
+                    // Write to console that it was sent.
                     Program.ConsoleWriteLineWithColorAndTime(ConsoleColor.Green, "Server statistic packet successfully sent to the backend.");
 
                 }
             } catch (Exception e)
             {
+                // Likely failed to post to server, we can ignore though.
                 Program.ConsoleWriteLineWithColorAndTime(ConsoleColor.Red, "An exception occured while attempting to update the backend with server statistics.");
                 Console.WriteLine(e.ToString());
             } 
         }
 
+        // Failed to bind exception thrower.
         public void FailedToBindException(Exception exception)
         {
             Program.ConsoleWriteLineWithColor(ConsoleColor.Red, (new String('=', Console.BufferWidth - 1)));
