@@ -140,7 +140,7 @@ namespace Router
                     // New JSON Object
                     new JObject
                     {
-                        { "id", miner.GetMinerIdentificationNumber().ToString() },
+                        { "miner_id", miner.GetMinerIdentificationNumber().ToString() },
                         { "user_id", miner.GetPoolInformationFromMiner().user_id.ToString() },
                         { "pool_id", miner.GetPoolInformationFromMiner().pool_id.ToString() },
                         { "pool_name", miner.GetPoolInformationFromMiner().name },
